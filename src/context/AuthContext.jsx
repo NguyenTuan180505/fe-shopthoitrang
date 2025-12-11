@@ -1,3 +1,4 @@
+// src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import axiosClient from '../api/axiosClient';
 
@@ -7,27 +8,44 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Decode JWT để lấy thông tin
+  const decodeToken = (token) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        email: payload.sub,
+        userId: payload.userId,
+        role: payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      };
+    } catch {
+      return null;
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
     if (token) {
-      axiosClient.get('/users/me')
-        .then(res => {
-          setUser(res.data);
-        })
-        .catch(() => localStorage.removeItem('admin_token'))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+      const decoded = decodeToken(token);
+
+      if (!decoded) {
+        localStorage.removeItem('admin_token');
+      } else {
+        setUser(decoded);
+      }
     }
+    setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     const res = await axiosClient.post('/auth/login', { email, password });
     const token = res.data.token;
+
     localStorage.setItem('admin_token', token);
-    const userRes = await axiosClient.get('/users/me');
-    setUser(userRes.data);
-    return userRes.data;
+
+    const decoded = decodeToken(token);
+    setUser(decoded);
+
+    return decoded;
   };
 
   const logout = () => {
