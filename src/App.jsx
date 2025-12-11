@@ -10,7 +10,9 @@ import Products from './pages/admin/Products';
 // import Categories from './pages/admin/Categories';
 // import Orders from './pages/admin/Orders';
 import Login from './pages/admin/Login';
-
+import Orders from './pages/Order/Order';
+import OrderDetailModal from './pages/Order/OrderDetailModal';
+import Users from './pages/User/User';
 function AdminLayout() {
   const { user, loading } = useAuth();
 
@@ -24,11 +26,13 @@ function AdminLayout() {
         <Header />
         <div className="p-4">
           <Routes>
-            {/* <Route path="/" element={<Dashboard />} />
-            <Route path="/users" element={<Users />} /> */}
+  
+            <Route path="/users" element={<Users />} /> 
             <Route path="/products" element={<Products />} />
             {/* <Route path="/categories" element={<Categories />} />
             <Route path="/orders" element={<Orders />} /> */}
+            <Route path="/orders" element={<Orders />}/>
+            <Route path="/orderdetail" element={<OrderDetailModal />}/>
           </Routes>
         </div>
       </div>
