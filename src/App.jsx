@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 
+import Dashboard from './pages/admin/Dashboard';
 import ProductList from './pages/admin/Product/ProductList';
 import ProductForm from './pages/admin/Product/ProductForm';
 import CategoryList from './pages/admin/Category/CategoryList';
@@ -31,6 +32,7 @@ function AdminLayout() {
         <Header />
         <div className="p-4">
           <Routes>
+            <Route path="" element={<Dashboard />} />
             <Route path="products" element={<ProductList />} />
             <Route path="products/add" element={<ProductForm />} />
             <Route path="products/edit/:id" element={<ProductForm />} />
