@@ -1,0 +1,60 @@
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+  aspect-ratio: 3 / 4;
+  background-size: cover;
+  background-position: center;
+  border-radius: 6px;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: crimson;
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+.name {
+  margin: 12px 0 6px;
+  font-size: 17px;
+}
+
+.price {
+  display: flex;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.old {
+  text-decoration: line-through;
+  opacity: 0.4;
+}
+
+.stock {
+  font-size: 14px;
+  opacity: 0.6;
+  margin: 6px 0;
+}
+
+.btn {
+  margin-top: auto;
+  padding: 10px;
+  background: #03341d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

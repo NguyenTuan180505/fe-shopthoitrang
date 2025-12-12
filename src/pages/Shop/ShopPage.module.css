@@ -1,0 +1,21 @@
+.shop {
+  padding: 60px 0;
+}
+
+.title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 40px;
+}
+
+.layout {
+  display: flex;
+  gap: 40px;
+}
+
+.grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
