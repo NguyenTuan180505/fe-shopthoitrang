@@ -1,5 +1,4 @@
 import styles from "./HeroSection.module.css";
-import ModelImg from "../../assets/images/model.png";
 
 export default function HeroSection() {
   return (
@@ -25,7 +24,11 @@ export default function HeroSection() {
           {/* RIGHT IMAGE */}
           <div className={styles.right}>
             <div className={styles.imageBox}>
-              <img src={ModelImg} alt="model" className={styles.model} />
+              <img
+                src="/images/model.png"
+                alt="model"
+                className={styles.model}
+              />
             </div>
           </div>
         </div>
