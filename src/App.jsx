@@ -9,6 +9,9 @@ import ProductList from './pages/admin/Product/ProductList';
 import ProductForm from './pages/admin/Product/ProductForm';
 import CategoryList from './pages/admin/Category/CategoryList';
 import CategoryForm from './pages/admin/Category/CategoryForm';
+import Users from './pages/admin/User/User';
+import Orders from './pages/admin/Order/Order';
+import OrderDetailModal from './pages/admin/Order/OrderDetailModal';
 import Login from './pages/admin/Login';
 
 function AdminLayout() {
@@ -39,6 +42,9 @@ function AdminLayout() {
             <Route path="categories" element={<CategoryList />} />
             <Route path="categories/add" element={<CategoryForm />} />
             <Route path="categories/edit/:id" element={<CategoryForm />} />
+            <Route path="/users" element={<Users />} /> 
+              <Route path="/orders" element={<Orders />}/>
+            <Route path="/orderdetail" element={<OrderDetailModal />}/>
           </Routes>
         </div>
       </div>
