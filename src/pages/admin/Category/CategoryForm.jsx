@@ -79,7 +79,6 @@ export default function CategoryForm() {
   return (
     <div className="container-fluid p-4 bg-light" style={{minHeight: '85vh'}}>
         
-        {/* 1. HEADER & BREADCRUMB */}
         <div className="d-flex justify-content-between align-items-center mb-4">
             <h3 className="text-primary fw-bold m-0">
                 {isEditMode ? 'Chỉnh Sửa Danh Mục' : 'Tạo Danh Mục Mới'}

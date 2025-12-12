@@ -86,11 +86,6 @@ const Dashboard = () => {
                     </h3>
                     <p className="text-muted mb-0">Tổng quan tình hình kinh doanh của cửa hàng</p>
                 </div>
-                <div>
-                    <button className="btn btn-white border shadow-sm me-2">
-                        <i className="bi bi-download me-2"></i> Xuất Báo Cáo
-                    </button>
-                </div>
             </div>
 
             {/* 2. Doanh thu*/}

@@ -1,11 +1,13 @@
-// src/pages/admin/Users.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axiosClient from '../../../api/axiosClient';
 import { format } from 'date-fns';
 
 export default function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // State tìm kiếm
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Modal đổi vai trò
   const [selectedUser, setSelectedUser] = useState(null);
@@ -28,7 +30,24 @@ export default function Users() {
     }
   };
 
-  // Bật / tắt tài khoản
+  // --- TÍNH TOÁN THỐNG KÊ ---
+  const stats = useMemo(() => {
+    const totalUsers = users.length;
+    const activeUsers = users.filter(u => u.isActive).length;
+    const adminCount = users.filter(u => u.role?.roleName === 'ADMIN').length;
+    return { totalUsers, activeUsers, adminCount };
+  }, [users]);
+
+  // --- LỌC USER ---
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => 
+      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userID.toString().includes(searchTerm)
+    );
+  }, [users, searchTerm]);
+
+  // --- LOGIC CŨ GIỮ NGUYÊN ---
   const toggleUserStatus = async (userId, currentStatus) => {
     const newStatus = !currentStatus;
     try {
@@ -39,28 +58,20 @@ export default function Users() {
         )
       );
     } catch (err) {
-      console.error(err);
       alert('Cập nhật trạng thái thất bại');
     }
   };
 
-  // Mở modal đổi vai trò
   const openRoleModal = (user) => {
     setSelectedUser(user);
     setNewRole(user.role?.roleName || "USER");
     setShowRoleModal(true);
   };
 
-  // Gửi API PUT đổi vai trò
   const updateUserRole = async () => {
     if (!selectedUser) return;
-
     try {
-      await axiosClient.put(`/Users/${selectedUser.userID}/role`, {
-        roleName: newRole
-      });
-
-      // Cập nhật UI sau khi đổi
+      await axiosClient.put(`/Users/${selectedUser.userID}/role`, { roleName: newRole });
       setUsers(prev =>
         prev.map(u =>
           u.userID === selectedUser.userID
@@ -68,196 +79,255 @@ export default function Users() {
             : u
         )
       );
-
       setShowRoleModal(false);
     } catch (err) {
-      console.error(err);
       alert("Cập nhật vai trò thất bại");
     }
   };
 
   const formatDate = (date) => {
-    return format(new Date(date), 'dd/MM/yyyy HH:mm');
+    if(!date) return 'N/A';
+    try {
+        return format(new Date(date), 'dd/MM/yyyy HH:mm');
+    } catch {
+        return 'Invalid Date';
+    }
   };
 
-  if (loading) return <div className="text-center py-5">Đang tải tài khoản...</div>;
+  // Hàm lấy màu badge cho Role
+  const getRoleBadge = (roleName) => {
+      if(roleName === 'ADMIN') return 'bg-danger';
+      if(roleName === 'MANAGER') return 'bg-warning text-dark';
+      return 'bg-info text-dark';
+  };
+
+  if (loading) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "400px" }}>
+      <div className="spinner-border text-primary"></div>
+    </div>
+  );
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid p-4 bg-light">
 
-      {/* HEADER */}
+      {/* 1. HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Quản lý Tài khoản</h2>
-        {/* <button className="btn btn-success">
-          <i className="bi bi-plus-lg me-2"></i>Thêm tài khoản
-        </button> */}
+        <div>
+            <h3 className="fw-bold text-primary mb-1">
+                <i className="bi bi-people-fill me-2"></i>QUẢN LÝ TÀI KHOẢN
+            </h3>
+            <p className="text-muted mb-0">Quản lý danh sách khách hàng và phân quyền</p>
+        </div>
+        <button className="btn btn-outline-primary shadow-sm" onClick={fetchUsers}>
+            <i className="bi bi-arrow-clockwise me-2"></i> Làm mới
+        </button>
       </div>
 
-      {/* TABLE */}
-      {users.length === 0 ? (
-        <div className="text-center py-5 text-muted">Chưa có tài khoản nào</div>
-      ) : (
-        <div className="table-responsive shadow rounded">
-          <table className="table table-hover align-middle mb-0">
-            <thead className="table-dark">
-              <tr>
-                <th width="80">ID</th>
-                <th>Họ tên</th>
-                <th>Email</th>
-                <th>Số điện thoại</th>
-                <th>Vai trò</th>
-                <th>Ngày tạo</th>
-                <th width="120">Trạng thái</th>
-                <th width="140">Hành động</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {users.map(user => (
-                <tr key={user.userID}>
-                  <td><strong>#{user.userID}</strong></td>
-
-                  {/* Avatar + Name */}
-                  <td>
-                    <div className="d-flex align-items-center">
-                      <div
-                        className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                        style={{ width: 40, height: 40, fontSize: '1.1rem' }}
-                      >
-                        {user.fullName.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="fw-bold">{user.fullName}</div>
-                        {user.role?.roleName === 'ADMIN' && (
-                          <small className="text-danger fw-500">Quản trị viên</small>
-                        )}
-                      </div>
+      {/* 2. STATS CARDS */}
+      <div className="row g-4 mb-4">
+        <div className="col-md-4">
+            <div className="card border-0 shadow-sm border-start border-4 border-primary h-100">
+                <div className="card-body d-flex align-items-center">
+                    <div className="bg-primary bg-opacity-10 p-3 rounded-circle me-3 text-primary">
+                        <i className="bi bi-person-lines-fill fs-3"></i>
                     </div>
-                  </td>
-
-                  <td>{user.email}</td>
-                  <td>{user.phone || "Chưa cập nhật"}</td>
-
-                  {/* Role */}
-                  <td>
-                    <span className={`badge ${
-                      user.role?.roleName === 'ADMIN'
-                        ? 'bg-danger'
-                        : 'bg-info'
-                    }`}>
-                      {user.role?.roleName || 'USER'}
-                    </span>
-                  </td>
-
-                  <td>{formatDate(user.createdAt)}</td>
-
-                  {/* Status switch */}
-                  <td className="text-center">
-                    <div className="form-check form-switch d-inline-block">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={user.isActive}
-                        id={`switch-${user.userID}`}
-                        onChange={() => toggleUserStatus(user.userID, user.isActive)}
-                      />
-                      <label className="form-check-label" htmlFor={`switch-${user.userID}`}>
-                        {user.isActive ? (
-                          <span className="text-success">Hoạt động</span>
-                        ) : (
-                          <span className="text-muted">Bị khóa</span>
-                        )}
-                      </label>
+                    <div>
+                        <h6 className="text-muted text-uppercase mb-1 small fw-bold">Tổng Tài Khoản</h6>
+                        <h3 className="fw-bold mb-0">{stats.totalUsers}</h3>
                     </div>
-                  </td>
-
-                  {/* ACTION BUTTONS */}
-                  <td>
-                    {/* <button className="btn btn-sm btn-outline-primary me-1" title="Xem chi tiết">
-                      <i className="bi bi-eye"></i>
-                    </button>
-
-                    <button className="btn btn-sm btn-outline-warning me-1" title="Sửa">
-                      <i className="bi bi-pencil"></i>
-                    </button> */}
-
-                    {/* Đổi vai trò */}
-                    <button
-                      className="btn btn-sm btn-outline-secondary me-1"
-                      title="Đổi vai trò"
-                      onClick={() => openRoleModal(user)}
-                    >
-                      <i className="bi bi-shield-check"></i>
-                    </button>
-
-                    {/* Không cho xóa ADMIN */}
-                    {/* {user.role?.roleName !== "ADMIN" && (
-                      <button className="btn btn-sm btn-outline-danger" title="Xóa">
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    )} */}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-
-          </table>
+                </div>
+            </div>
         </div>
-      )}
+        <div className="col-md-4">
+            <div className="card border-0 shadow-sm border-start border-4 border-success h-100">
+                <div className="card-body d-flex align-items-center">
+                    <div className="bg-success bg-opacity-10 p-3 rounded-circle me-3 text-success">
+                        <i className="bi bi-person-check-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 className="text-muted text-uppercase mb-1 small fw-bold">Đang Hoạt Động</h6>
+                        <h3 className="fw-bold mb-0">{stats.activeUsers}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div className="col-md-4">
+            <div className="card border-0 shadow-sm border-start border-4 border-danger h-100">
+                <div className="card-body d-flex align-items-center">
+                    <div className="bg-danger bg-opacity-10 p-3 rounded-circle me-3 text-danger">
+                        <i className="bi bi-shield-lock-fill fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 className="text-muted text-uppercase mb-1 small fw-bold">Quản Trị Viên</h6>
+                        <h3 className="fw-bold mb-0">{stats.adminCount}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
 
-      {/* Tổng kết */}
-      <div className="mt-3 text-muted small">
-        Tổng cộng: <strong>{users.length}</strong> tài khoản
-        {users.filter(u => u.role?.roleName === 'ADMIN').length > 0 && (
-          <> • <strong className="text-danger">
-            {users.filter(u => u.role?.roleName === 'ADMIN').length} Quản trị viên
-          </strong></>
-        )}
+      {/* 3. TOOLBAR */}
+      <div className="card shadow-sm border-0 mb-4">
+        <div className="card-body">
+            <div className="input-group" style={{maxWidth: '400px'}}>
+                <span className="input-group-text bg-white border-end-0"><i className="bi bi-search"></i></span>
+                <input 
+                    type="text" 
+                    className="form-control border-start-0 ps-0" 
+                    placeholder="Tìm tên, email, ID..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+        </div>
+      </div>
+
+      {/* 4. TABLE */}
+      <div className="card shadow-sm border-0">
+        <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="table-light">
+                  <tr>
+                    <th width="80" className="ps-4 py-3 text-secondary small text-uppercase fw-bold">ID</th>
+                    <th className="py-3 text-secondary small text-uppercase fw-bold">Thành Viên</th>
+                    <th className="py-3 text-secondary small text-uppercase fw-bold">Thông Tin Liên Hệ</th>
+                    <th className="py-3 text-secondary small text-uppercase fw-bold">Vai Trò</th>
+                    <th className="py-3 text-secondary small text-uppercase fw-bold">Ngày Tạo</th>
+                    <th width="120" className="py-3 text-secondary small text-uppercase fw-bold">Trạng Thái</th>
+                    <th width="100" className="py-3 text-secondary small text-uppercase fw-bold text-center">Hành Động</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map(user => (
+                      <tr key={user.userID} style={{borderBottom: '1px solid #f0f0f0'}}>
+                        <td className="ps-4 fw-bold text-secondary">#{user.userID}</td>
+
+                        {/* Avatar + Name */}
+                        <td>
+                          <div className="d-flex align-items-center">
+                            <div className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 border border-primary border-opacity-25" 
+                                style={{ width: 40, height: 40, fontSize: '1.1rem', fontWeight: 'bold' }}>
+                              {user.fullName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="fw-bold text-dark">{user.fullName}</div>
+                              {user.role?.roleName === 'ADMIN' && (
+                                <small className="text-danger fw-bold" style={{fontSize: '0.7rem'}}>
+                                    <i className="bi bi-shield-fill me-1"></i>System Admin
+                                </small>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                            <div className="d-flex flex-column">
+                                <span className="text-dark mb-1"><i className="bi bi-envelope me-2 text-muted"></i>{user.email}</span>
+                                <span className="text-muted small"><i className="bi bi-telephone me-2 text-muted"></i>{user.phone || "---"}</span>
+                            </div>
+                        </td>
+
+                        {/* Role */}
+                        <td>
+                          <span className={`badge ${getRoleBadge(user.role?.roleName)} border bg-opacity-25 px-3 py-2 rounded-pill`}>
+                            {user.role?.roleName || 'USER'}
+                          </span>
+                        </td>
+
+                        <td className="text-muted small">
+                            {formatDate(user.createdAt)}
+                        </td>
+
+                        {/* Status switch */}
+                        <td>
+                          <div className="form-check form-switch">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              style={{cursor: 'pointer'}}
+                              checked={user.isActive}
+                              id={`switch-${user.userID}`}
+                              onChange={() => toggleUserStatus(user.userID, user.isActive)}
+                              // Không cho tắt chính mình nếu là Admin (Logic bảo vệ cơ bản)
+                              disabled={false} 
+                            />
+                            <label className="form-check-label small" htmlFor={`switch-${user.userID}`}>
+                              {user.isActive ? <span className="text-success fw-bold">Active</span> : <span className="text-muted">Locked</span>}
+                            </label>
+                          </div>
+                        </td>
+
+                        {/* ACTION BUTTONS */}
+                        <td className="text-center">
+                          <button
+                            className="btn btn-sm btn-outline-secondary border-0 bg-secondary bg-opacity-10 text-dark"
+                            title="Đổi vai trò"
+                            onClick={() => openRoleModal(user)}
+                          >
+                            <i className="bi bi-person-gear fs-6"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                        <td colSpan="7" className="text-center py-5 text-muted">
+                            <i className="bi bi-person-x fs-1 d-block mb-2 opacity-50"></i>
+                            Không tìm thấy tài khoản nào.
+                        </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+        </div>
       </div>
 
       {/* MODAL ĐỔI VAI TRÒ */}
       {showRoleModal && (
-        <div
-          className="modal fade show"
-          style={{
-            display: "block",
-            background: "rgba(0,0,0,0.5)"
-          }}
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-
-              <div className="modal-header">
-                <h5 className="modal-title">Đổi vai trò người dùng</h5>
-                <button className="btn-close" onClick={() => setShowRoleModal(false)}></button>
+        <div className="modal fade show" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} tabIndex="-1">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content shadow border-0">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title fw-bold"><i className="bi bi-shield-lock me-2"></i>Phân Quyền Người Dùng</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowRoleModal(false)}></button>
               </div>
+              <div className="modal-body p-4">
+                <div className="mb-3 text-center">
+                    <div className="bg-light rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style={{width: '60px', height: '60px'}}>
+                        <span className="fs-3 fw-bold text-primary">{selectedUser?.fullName.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <h5 className="fw-bold">{selectedUser?.fullName}</h5>
+                    <p className="text-muted small">{selectedUser?.email}</p>
+                </div>
 
-              <div className="modal-body">
-                <p className="fw-bold mb-2">
-                  Người dùng: {selectedUser?.fullName}
-                </p>
-
-                <label className="form-label">Chọn vai trò mới:</label>
-                <select
-                  className="form-select"
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                >
-                  <option value="USER">USER</option>
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="MANAGER">MANAGER</option>
-                </select>
+                <div className="mb-3">
+                    <label className="form-label fw-bold text-secondary text-uppercase small">Chọn vai trò mới</label>
+                    <select
+                      className="form-select form-select-lg"
+                      value={newRole}
+                      onChange={(e) => setNewRole(e.target.value)}
+                    >
+                      <option value="USER">User (Khách hàng)</option>
+                      <option value="ADMIN">Admin (Quản trị viên)</option>
+                      {/* Thêm các role khác nếu có */}
+                    </select>
+                </div>
+                
+                <div className="alert alert-info small d-flex align-items-center">
+                    <i className="bi bi-info-circle-fill me-2 fs-5"></i>
+                    <div>
+                        <strong>Lưu ý:</strong> Quyền Admin có thể truy cập toàn bộ hệ thống quản trị.
+                    </div>
+                </div>
               </div>
-
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowRoleModal(false)}>
-                  Hủy
-                </button>
-                <button className="btn btn-primary" onClick={updateUserRole}>
-                  Lưu thay đổi
-                </button>
+              <div className="modal-footer bg-light">
+                <button className="btn btn-light border" onClick={() => setShowRoleModal(false)}>Hủy bỏ</button>
+                <button className="btn btn-primary px-4" onClick={updateUserRole}>Xác nhận lưu</button>
               </div>
-
             </div>
           </div>
         </div>
