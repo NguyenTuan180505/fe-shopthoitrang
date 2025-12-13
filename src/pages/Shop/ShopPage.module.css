@@ -1,12 +1,27 @@
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 80px;
 }
-.shop {
-  padding: 60px 0;
-  min-height: 100vh;
-  background: #f0f9f4;
+
+.hero {
+  background: linear-gradient(to bottom, #c9f6d6 0%, #a8e6cf 100%);
+  padding: 100px 0 80px;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #03341d;
+  margin-bottom: 24px;
+}
+
+.heroSubtitle {
+  font-size: 1.3rem;
+  color: #4b5563;
+  margin: 0;
 }
 
 .title {

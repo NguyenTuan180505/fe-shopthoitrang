@@ -24,9 +24,15 @@ export default function ShopPage() {
 
   return (
     <div className={styles.shop}>
+      <div className={styles.hero}>
+        <div className="container">
+          <h1 className={styles.heroTitle}>Mua hàng tiện lợi</h1>
+          <p className={styles.heroSubtitle}>
+            Mua sắm các sản phẩm thời trang mới nhất từ cửa hàng của chúng tôi
+          </p>
+        </div>
+      </div>
       <div className={styles.container}>
-        <h1 className={styles.title}>Shop</h1>
-
         <div className={styles.layout}>
           <CategoryFilter
             categories={categories}

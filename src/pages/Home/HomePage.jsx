@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import HeroSection from "./HeroSection";
 import ProductTabs from "../../components/ProductTabs/ProductTabs";
-
+import ExclusiveOffer from "../../components/Home/ExclusiveOffer";
+import FeaturedCategories from "../../components/Home/FeaturedCategories";
 export default function HomePage() {
   const [products, setProducts] = useState([]);
 
@@ -15,10 +16,11 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-
+      <FeaturedCategories />
       <div className="container">
         <ProductTabs products={products} />
       </div>
+      <ExclusiveOffer />
     </>
   );
 }

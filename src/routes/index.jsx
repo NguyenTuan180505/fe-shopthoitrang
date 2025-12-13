@@ -15,7 +15,8 @@ import ReviewList from "../pages/Review/ReviewList";
 import ReviewForm from "../pages/Review/ReviewForm";
 import UserRoute from "./UserRoute";
 import CartPage from "../pages/Cart/CartPage";
-
+import FeaturesPage from "../pages/Features/FeaturesPage";
+import ContactPage from "../pages/Contact/ContactPage";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -45,7 +46,6 @@ export const router = createBrowserRouter([
           </UserRoute>
         ),
       },
-
       // ============================
       // REVIEW
       // ============================
@@ -72,6 +72,17 @@ export const router = createBrowserRouter([
       {
         path: "shop",
         element: <ShopPage />,
+      },
+      // ============================
+      // OTHERS
+      // ============================
+      {
+        path: "features",
+        element: <FeaturesPage />,
+      },
+      {
+        path: "contact",
+        element: <ContactPage />,
       },
       {
         path: "product/:id",
