@@ -3,15 +3,25 @@
   box-sizing: border-box;
 }
 
+/* ====================== MAIN LAYOUT ====================== */
+.app-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  width: 100%;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* ====================== SIDEBAR ====================== */
 .sidebar {
   width: 100%;
   padding: 24px 16px;
   background-color: #fff;
   border-right: 1px solid #e8e8e8;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  position: relative;
+  height: auto;
+  min-height: 100vh;
+  overflow-y: visible;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
@@ -99,6 +109,7 @@
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 .menu-item:hover svg {
@@ -140,86 +151,13 @@
 .menu-item.logout.active::after {
   display: none;
 }
-/* MAIN LAYOUT */
-.app-container {
-  display: grid;
-  grid-template-columns: 300px 1fr; /* Sidebar 300px + nội dung tự giãn */
-  width: 100%;
-  background-color: #f5f5f5;
-  min-height: 100vh;
-}
 
-/* MAIN CONTENT — full width theo header */
+/* ====================== MAIN CONTENT ====================== */
 .main-content {
   padding: 32px 40px;
   width: 100%;
   overflow-y: auto;
-}
-
-/* ====================== SIDEBAR ====================== */
-.sidebar {
-  width: 100%; /* lúc này đã cố định 300px từ grid */
-  padding: 20px;
-  background-color: #fff;
-  border-right: 1px solid #e0e0e0;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.sidebar-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  letter-spacing: 0.5px;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 15px;
-  color: #03341d;
-  transition: 0.2s;
-}
-
-.menu-item:hover {
-  background-color: #f1fdf4;
-}
-
-.menu-item.active {
-  background-color: #e1f9eb;
-  border-left: 4px solid #03341d;
-  padding-left: 10px;
-  font-weight: 600;
-}
-
-.menu-item svg {
-  color: #666;
-}
-
-.menu-item.active svg {
-  color: #03341d;
-}
-
-.menu-item.logout {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #eee;
-  color: #d62828;
-}
-
-.menu-item.logout svg {
-  color: #d62828;
-}
-
-.menu-item.logout:hover {
-  background-color: #ffe8e8;
+  min-height: 100vh;
 }
 
 /* ====================== CONTENT SECTION ====================== */
@@ -228,8 +166,8 @@
   border-radius: 16px;
   padding: 40px;
   width: 100%;
-  max-width: 1400px; /* MỞ RỘNG để cân đối với header */
-  margin: 0 auto;   /* căn giữa trong main-content */
+  max-width: 1400px;
+  margin: 0 auto;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
@@ -290,7 +228,7 @@
 .edit-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.45);
+  background-color: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -310,8 +248,14 @@
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0);  }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* FORM */
@@ -337,6 +281,7 @@
   padding: 12px 14px;
   border-radius: 6px;
   border: 1px solid #ddd;
+  font-size: 15px;
 }
 
 /* FORM ACTIONS */
@@ -352,6 +297,14 @@
   border: 1px solid #ddd;
   padding: 12px;
   border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-reset:hover {
+  background-color: #e8e8e8;
 }
 
 .btn-submit {
@@ -359,67 +312,232 @@
   color: #fff;
   padding: 12px;
   border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s ease;
+}
+
+.btn-submit:hover {
+  background-color: #022315;
 }
 
 /* ====================== MODAL (LOGOUT) ====================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.45);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeInOverlay 0.3s ease;
+  padding: 20px;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
-  background: #fff;
-  padding: 28px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fffe 100%);
+  padding: 40px 32px;
   width: 100%;
-  max-width: 400px;
-  border-radius: 14px;
+  max-width: 420px;
+  border-radius: 20px;
   text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+              0 0 0 1px rgba(5, 150, 105, 0.1);
+  animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
 }
 
-.btn-confirm {
-  background: #d62828;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 6px;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #03341d;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.modal-message {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 }
 
 .btn-cancel {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background: #f5f5f5;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex: 1;
+  max-width: 140px;
+}
+
+.btn-cancel:hover {
+  background: #fff;
+  border-color: #d0d0d0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.btn-cancel:active {
+  transform: translateY(0);
+}
+
+.btn-confirm {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex: 1;
+  max-width: 140px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.btn-confirm::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn-confirm:hover {
+  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.4);
+  animation: shake3856 0.3s linear infinite;
+}
+
+.btn-confirm:hover::before {
+  transform: translateX(100%);
+}
+
+.btn-confirm:active {
+  animation: none;
+  transform: translateY(0);
+}
+
+/* SHAKE ANIMATION */
+@keyframes shake3856 {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
 }
 
 /* ====================== RESPONSIVE ====================== */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .app-container {
     grid-template-columns: 1fr;
   }
 
   .sidebar {
-    height: auto;
-    position: static;
+    position: sticky;
+    top: 0;
     border-right: none;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e8e8e8;
+    height: auto;
+    min-height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .sidebar-title {
+    margin-right: 20px;
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+
+  .menu-item {
+    white-space: nowrap;
+  }
+
+  .menu-item.logout {
+    margin-top: 0;
+    margin-left: auto;
+    padding-top: 0;
+    border-top: none;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .main-content {
     padding: 20px;
   }
 
   .content-section {
-    padding: 20px;
-    max-width: 100%;
+    padding: 24px;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
+  .modal-content {
+    padding: 32px 24px;
+  }
+
+  .modal-title {
+    font-size: 22px;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    max-width: none;
   }
 }

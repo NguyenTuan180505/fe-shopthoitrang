@@ -10,7 +10,7 @@ export const UserAuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // ============================
-  // LẤY USER TỪ BACKEND /users/me
+  // LẤY USER HIỆN TẠI
   // ============================
   const fetchCurrentUser = async () => {
     try {
@@ -18,27 +18,48 @@ export const UserAuthProvider = ({ children }) => {
       setUser(res.data);
       setIsAuthenticated(true);
     } catch (err) {
-      console.error("Lỗi lấy thông tin user:", err);
-      logout();
+      console.error("Lỗi lấy user:", err);
+      // ❌ KHÔNG logout ở đây
+      setUser(null);
+      setIsAuthenticated(false);
     }
   };
 
   // ============================
-  // ĐĂNG NHẬP
+  // LOGIN → CHỈ GỬI OTP
   // ============================
   const login = async (email, password) => {
     try {
-      const res = await axiosClientUser.post("/auth/login", { email, password });
+      await axiosClientUser.post("/auth/login", { email, password });
+      return true;
+    } catch (err) {
+      console.error("Lỗi login:", err);
+      return false;
+    }
+  };
+
+  // ============================
+  // VERIFY OTP → NHẬN TOKEN
+  // ============================
+  const verifyOtp = async (email, otp) => {
+    try {
+      const res = await axiosClientUser.post("/auth/verify-otp", {
+        email,
+        otp,
+      });
 
       const token = res.data.token;
       localStorage.setItem("user_token", token);
 
-      // lấy user đầy đủ
+      // ✅ SET AUTH TRƯỚC
+      setIsAuthenticated(true);
+
+      // ✅ SAU ĐÓ FETCH USER
       await fetchCurrentUser();
 
       return true;
     } catch (err) {
-      console.error("Lỗi đăng nhập:", err);
+      console.error("Lỗi verify OTP:", err);
       return false;
     }
   };
@@ -54,7 +75,6 @@ export const UserAuthProvider = ({ children }) => {
         password,
         phone,
       });
-
       return true;
     } catch {
       return false;
@@ -66,34 +86,34 @@ export const UserAuthProvider = ({ children }) => {
   // ============================
   const logout = () => {
     localStorage.removeItem("user_token");
+    localStorage.removeItem("otp_email");
     setUser(null);
     setIsAuthenticated(false);
-    window.location.href = "/login";
   };
 
   // ============================
-  // KIỂM TRA TOKEN KHI LOAD TRANG
+  // KIỂM TRA TOKEN KHI LOAD APP
   // ============================
   useEffect(() => {
-  const init = async () => {
-    const token = localStorage.getItem("user_token");
+    const init = async () => {
+      const token = localStorage.getItem("user_token");
 
-    if (token) {
-      await fetchCurrentUser();  
-    }
+      if (token) {
+        await fetchCurrentUser();
+      }
 
-    setLoading(false);
-  };
+      setLoading(false);
+    };
 
-  init();
-}, []);
-
+    init();
+  }, []);
 
   return (
     <UserAuthContext.Provider
       value={{
         user,
         login,
+        verifyOtp,
         signup,
         logout,
         isAuthenticated,

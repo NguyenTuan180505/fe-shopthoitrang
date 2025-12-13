@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useUserAuth } from "../../context/UserAuthContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import "./Login.css";
 
 export default function Login() {
@@ -11,8 +11,13 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useUserAuth();
+  const { login, isAuthenticated } = useUserAuth();
   const navigate = useNavigate();
+
+  // ✅ NẾU ĐÃ LOGIN → ĐÁ SANG PROFILE
+  if (isAuthenticated) {
+    return <Navigate to="/profile" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +33,8 @@ export default function Login() {
       const ok = await login(email, password);
 
       if (ok) {
-        navigate("/profile");
+        localStorage.setItem("otp_email", email);
+        navigate("/verify-otp");
       } else {
         setErrorMsg("Email hoặc mật khẩu không đúng!");
       }
@@ -41,14 +47,11 @@ export default function Login() {
 
   return (
     <div className="login-wrapper">
-      {/* Background decoration */}
       <div className="login-blob login-blob-1"></div>
       <div className="login-blob login-blob-2"></div>
 
-      {/* Login Card */}
       <div className="login-container">
         <div className="login-card">
-          {/* Header */}
           <div className="login-header">
             <div className="login-icon-circle">
               <Lock className="login-icon" size={28} />
@@ -57,7 +60,6 @@ export default function Login() {
             <p className="login-subtitle">Truy cập tài khoản của bạn</p>
           </div>
 
-          {/* Error Message */}
           {errorMsg && (
             <div className="login-error">
               <AlertCircle size={20} />
@@ -65,9 +67,7 @@ export default function Login() {
             </div>
           )}
 
-          {/* Form */}
           <div className="login-form">
-            {/* Email Input */}
             <div className="login-form-group">
               <label htmlFor="email" className="login-label">
                 Email
@@ -86,7 +86,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Password Input */}
             <div className="login-form-group">
               <label htmlFor="password" className="login-label">
                 Mật khẩu
@@ -111,16 +110,11 @@ export default function Login() {
                   disabled={isLoading}
                   className="login-password-toggle"
                 >
-                  {showPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
-            {/* Remember & Forgot */}
             <div className="login-remember-forgot">
               <label className="login-checkbox-label">
                 <input
@@ -135,7 +129,6 @@ export default function Login() {
               </a>
             </div>
 
-            {/* Submit Button */}
             <button
               onClick={handleSubmit}
               disabled={isLoading}
@@ -152,7 +145,6 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Footer */}
           <p className="login-footer">
             Chưa có tài khoản?{" "}
             <Link to="/signup" className="login-signup-link">
@@ -161,7 +153,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Bottom text */}
         <p className="login-copyright">
           © 2024 Your Fashion Store. All rights reserved.
         </p>
