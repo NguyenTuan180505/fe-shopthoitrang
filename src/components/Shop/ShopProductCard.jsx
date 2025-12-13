@@ -1,7 +1,7 @@
 import styles from "./ShopProductCard.module.css";
 import { Link } from "react-router-dom";
 export default function ShopProductCard({ product }) {
-  const finalPrice = product.price - product.discount;
+  const finalPrice = product.price - (product.discount * product.price) / 100;
   const formatVND = (v) => v.toLocaleString("vi-VN") + " VND";
 
   return (

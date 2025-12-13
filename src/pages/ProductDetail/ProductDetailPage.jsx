@@ -1,16 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styles from "./ProductDetailPage.module.css";
+import { cartService } from "../../services/cart.service";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
-  const increaseQty = () => setQuantity((prev) => prev + 1);
 
-  const decreaseQty = () => {
-    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-  };
+  const [quantity, setQuantity] = useState(1);
+  const [adding, setAdding] = useState(false);
+
+  const increaseQty = () => setQuantity((prev) => prev + 1);
+  const decreaseQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   const [product, setProduct] = useState(null);
   const [allProducts, setAllProducts] = useState([]);
@@ -20,7 +21,6 @@ export default function ProductDetailPage() {
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);
-
         const found = data.find((p) => p.productID === Number(id));
         setProduct(found);
       });
@@ -28,12 +28,9 @@ export default function ProductDetailPage() {
 
   if (!product) return <p className={styles.loading}>Đang tải sản phẩm...</p>;
 
-  // Vì discount từ API là đơn vị %, ví dụ 10 = 10%
   const finalPrice = product.price - (product.price * product.discount) / 100;
-
   const formatVND = (v) => v.toLocaleString("vi-VN") + " ₫";
 
-  // sản phẩm tương tự cùng danh mục
   const relatedProducts = allProducts
     .filter(
       (p) =>
@@ -42,23 +39,40 @@ export default function ProductDetailPage() {
     )
     .slice(0, 4);
 
+  const handleAddToCart = async () => {
+    try {
+      setAdding(true);
+      await cartService.addToCart(product.productID, quantity);
+
+      // Hiệu ứng thông báo thành công
+      const successMsg = document.createElement("div");
+      successMsg.className = styles.successToast;
+      successMsg.textContent = "✓ Đã thêm vào giỏ hàng";
+      document.body.appendChild(successMsg);
+
+      setTimeout(() => successMsg.remove(), 2000);
+    } catch (error) {
+      console.error("Lỗi thêm vào giỏ:", error);
+      if (error.response?.status === 401) {
+        alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
+      } else {
+        alert("Không thể thêm sản phẩm vào giỏ");
+      }
+    } finally {
+      setAdding(false);
+    }
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        {/* IMAGE */}
         <div className={styles.imageBox}>
           {product.discount > 0 && (
             <div className={styles.badge}>-{product.discount}%</div>
           )}
-
-          <img
-            src={product.imageUrl}
-            alt={product.productName}
-            onError={(e) => (e.target.src = "/no-image.png")}
-          />
+          <img src={product.imageUrl} alt={product.productName} />
         </div>
 
-        {/* INFO */}
         <div className={styles.info}>
           <h1 className={styles.title}>{product.productName}</h1>
 
@@ -77,28 +91,29 @@ export default function ProductDetailPage() {
             Tồn kho: <strong>{product.stock}</strong>
           </p>
 
-          {/* Quantity */}
           <div className={styles.qtyRow}>
             <button onClick={decreaseQty}>-</button>
-
             <input
               type="number"
               value={quantity}
               min={1}
-              onChange={(e) => {
-                const val = parseInt(e.target.value) || 1;
-                setQuantity(val < 1 ? 1 : val);
-              }}
+              onChange={(e) =>
+                setQuantity(Math.max(1, Number(e.target.value) || 1))
+              }
             />
-
             <button onClick={increaseQty}>+</button>
           </div>
 
-          <button className={styles.buyBtn}>Thêm vào giỏ hàng</button>
+          <button
+            className={styles.buyBtn}
+            onClick={handleAddToCart}
+            disabled={adding}
+          >
+            {adding ? "Đang thêm..." : "🛒 Thêm vào giỏ hàng"}
+          </button>
         </div>
       </div>
 
-      {/* RELATED PRODUCTS */}
       <div className={styles.relatedSection}>
         <h2>Sản phẩm tương tự</h2>
 
@@ -112,15 +127,9 @@ export default function ProductDetailPage() {
               onClick={() => navigate(`/product/${item.productID}`)}
             >
               <div className={styles.relatedThumb}>
-                <img
-                  src={item.imageUrl}
-                  alt={item.productName}
-                  onError={(e) => (e.target.src = "/no-image.png")}
-                />
+                <img src={item.imageUrl} alt={item.productName} />
               </div>
-
               <p className={styles.relatedName}>{item.productName}</p>
-
               <p className={styles.relatedPrice}>
                 {formatVND(item.price - (item.price * item.discount) / 100)}
               </p>

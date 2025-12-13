@@ -102,3 +102,19 @@
   font-size: 18px;
   margin-left: 20px;
 }
+.userBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userEmail {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  text-decoration: none;
+}
+
+.userEmail:hover {
+  text-decoration: underline;
+}

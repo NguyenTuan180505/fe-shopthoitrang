@@ -23,8 +23,8 @@ export default function ShopPage() {
     : products;
 
   return (
-    <div className="container">
-      <div className={styles.shop}>
+    <div className={styles.shop}>
+      <div className={styles.container}>
         <h1 className={styles.title}>Shop</h1>
 
         <div className={styles.layout}>

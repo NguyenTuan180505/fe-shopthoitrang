@@ -1,14 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styles from "./Header.module.css";
 import ShoppingBag from "../../assets/icons/shopping-bag.svg";
-import { NavLink } from "react-router-dom";
+import { useUserAuth } from "../../context/UserAuthContext";
+
 export default function Header() {
+  const { user, isAuthenticated, logout } = useUserAuth();
+
   return (
     <header className={styles.header}>
       <div className="container">
         <div className={styles.inner}>
           <div className={styles.logo}>FASHION</div>
 
+          {/* NAVIGATION */}
           <nav className={styles.nav}>
             <NavLink
               to="/"
@@ -47,15 +51,35 @@ export default function Header() {
             </NavLink>
           </nav>
 
+          {/* RIGHT SIDE */}
           <div className={styles.right}>
-            <div className={styles.cartIconWrapper}>
+            {/* Cart icon */}
+            <Link to="/cart" className={styles.cartIconWrapper}>
               <img
                 src={ShoppingBag}
                 alt="cart_icon"
                 className={styles.cartIcon}
               />
-            </div>
-            <button className={styles.loginBtn}>LOGIN</button>
+            </Link>
+
+            {/* LOGIN / LOGOUT */}
+            {!isAuthenticated ? (
+              // Chưa login → nút LOGIN
+              <Link to="/login">
+                <button className={styles.loginBtn}>LOGIN</button>
+              </Link>
+            ) : (
+              // Đã login → Hiện email + nút Logout
+              <div className={styles.userBox}>
+                <Link to="/profile" className={styles.userEmail}>
+                  {user?.email}
+                </Link>
+
+                <button className={styles.loginBtn} onClick={logout}>
+                  LOGOUT
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
