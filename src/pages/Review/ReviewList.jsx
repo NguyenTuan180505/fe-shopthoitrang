@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ReviewList.css';
-import { getReviewsByProductId } from '../../api/reviewApi';
+import { getReviewsByProductId, deleteReview } from '../../api/reviewApi';
 
 export default function ReviewList() {
   const { productId } = useParams();
@@ -11,6 +11,8 @@ export default function ReviewList() {
   const [productName, setProductName] = useState('');
   const [filterRating, setFilterRating] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [loading, setLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // ============================
   // FETCH REVIEWS
@@ -54,6 +56,23 @@ export default function ReviewList() {
     fetchReviews();
   }, [productId]);
 
+  // ============================
+  // DELETE REVIEW
+  // ============================
+  const handleDeleteReview = async (reviewId) => {
+    setLoading(true);
+    try {
+      await deleteReview(reviewId);
+      // Xóa review khỏi state
+      setReviews(reviews.filter(r => r.id !== reviewId));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error('Lỗi xóa review:', err);
+      setDeleteConfirm(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleWriteReview = () => {
     navigate(`/reviews/${productId}/write`);
@@ -246,6 +265,34 @@ export default function ReviewList() {
                 <button className="helpful-btn" title="Bài đánh giá này hữu ích">
                   👍 Hữu ích ({review.helpful})
                 </button>
+                
+                {deleteConfirm === review.id ? (
+                  <div className="delete-confirm">
+                    <span className="confirm-text">Bạn chắc chắn muốn xóa?</span>
+                    <button 
+                      className="btn-delete-yes" 
+                      onClick={() => handleDeleteReview(review.id)}
+                      disabled={loading}
+                    >
+                      {loading ? 'Đang xóa...' : 'Có'}
+                    </button>
+                    <button 
+                      className="btn-delete-no" 
+                      onClick={() => setDeleteConfirm(null)}
+                      disabled={loading}
+                    >
+                      Không
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    className="delete-btn" 
+                    onClick={() => setDeleteConfirm(review.id)}
+                    title="Xóa đánh giá này"
+                  >
+                    🗑️ Xóa
+                  </button>
+                )}
               </div>
             </div>
           ))

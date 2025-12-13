@@ -432,6 +432,8 @@
   display: flex;
   gap: 12px;
   margin-top: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .helpful-btn {
@@ -444,12 +446,89 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .helpful-btn:hover {
   border-color: #4a9d6f;
   color: #4a9d6f;
   background: #f8fdfb;
+}
+
+/* ====== DELETE BUTTON ====== */
+.delete-btn {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid #e8c4c4;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #d32f2f;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.delete-btn:hover {
+  border-color: #d32f2f;
+  background: #ffebee;
+  color: #b71c1c;
+}
+
+/* ====== DELETE CONFIRMATION ====== */
+.delete-confirm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.confirm-text {
+  font-size: 12px;
+  color: #d32f2f;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-delete-yes,
+.btn-delete-no {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.btn-delete-yes {
+  background: #d32f2f;
+  color: white;
+}
+
+.btn-delete-yes:hover:not(:disabled) {
+  background: #b71c1c;
+}
+
+.btn-delete-yes:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-delete-no {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-delete-no:hover:not(:disabled) {
+  background: #bdbdbd;
+}
+
+.btn-delete-no:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ====== NO REVIEWS ====== */
@@ -603,6 +682,21 @@
     width: 100%;
     justify-content: center;
   }
+
+  .review-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .helpful-btn,
+  .delete-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .delete-confirm {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -666,10 +760,29 @@
 
   .review-footer {
     flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
-  .helpful-btn {
+  .helpful-btn,
+  .delete-btn {
     width: 100%;
+    text-align: center;
+  }
+
+  .delete-confirm {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .confirm-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-delete-yes,
+  .btn-delete-no {
+    flex: 1;
   }
 
   .btn-submit,

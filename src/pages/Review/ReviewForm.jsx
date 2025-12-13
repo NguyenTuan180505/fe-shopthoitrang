@@ -22,6 +22,8 @@ export default function ReviewForm() {
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,10 +31,12 @@ export default function ReviewForm() {
       ...prev,
       [name]: value
     }));
+    setError('');
   };
 
   const handleStarClick = (rating) => {
     setFormData(prev => ({ ...prev, rating }));
+    setError('');
   };
 
   // ============================
@@ -47,13 +51,13 @@ export default function ReviewForm() {
       const isVideo = file.type.startsWith('video/');
       
       if (!isImage && !isVideo) {
-        alert('Chỉ hỗ trợ ảnh hoặc video!');
+        setError('Chỉ hỗ trợ ảnh hoặc video!');
         return;
       }
 
       // Kiểm tra kích thước (max 50MB)
       if (file.size > 50 * 1024 * 1024) {
-        alert('Tệp quá lớn (tối đa 50MB)');
+        setError('Tệp quá lớn (tối đa 50MB)');
         return;
       }
 
@@ -86,9 +90,12 @@ export default function ReviewForm() {
   // ============================
   const handleSubmit = async () => {
     if (!formData.rating || !formData.content) {
-      alert('Vui lòng nhập đánh giá (rating) và bình luận!');
+      setError('Vui lòng nhập đánh giá (rating) và bình luận!');
       return;
     }
+
+    setLoading(true);
+    setError('');
 
     try {
       const payload = {
@@ -100,8 +107,6 @@ export default function ReviewForm() {
       };
 
       await createReview(payload);
-
-      alert('Cảm ơn bạn đã gửi đánh giá!');
 
       setFormData({
         rating: 0,
@@ -122,7 +127,9 @@ export default function ReviewForm() {
       navigate(`/reviews/${productId}`);
     } catch (err) {
       console.error('Lỗi gửi review:', err);
-      alert('Gửi đánh giá thất bại. Vui lòng thử lại!');
+      setError('Gửi đánh giá thất bại. Vui lòng thử lại!');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -145,6 +152,21 @@ export default function ReviewForm() {
       </div>
 
       <div className="review-form">
+        {/* Error Message */}
+        {error && (
+          <div className="error-message">
+            <span className="error-icon">⚠️</span>
+            <p>{error}</p>
+            <button 
+              type="button" 
+              className="error-close" 
+              onClick={() => setError('')}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         <div className="form-header-title">
           <h2>THÔNG TIN ĐÁNH GIÁ</h2>
           <span className="required-note">Bắt buộc*</span>
@@ -305,13 +327,15 @@ export default function ReviewForm() {
             type="button"
             onClick={handleSubmit}
             className="btn-submit"
+            disabled={loading}
           >
-            VIẾT BÀI ĐÁNH GIÁ
+            {loading ? 'ĐANG GỬI...' : 'GỬI ĐÁNH GIÁ'}
           </button>
           <button
             type="button"
             onClick={() => navigate(`/reviews/${productId}`)}
             className="btn-cancel"
+            disabled={loading}
           >
             QUAY LẠI
           </button>
