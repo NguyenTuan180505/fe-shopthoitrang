@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { cartService } from "../../services/cart.service";
 import CartItem from "../../components/Cart/CartItem";
 import styles from "./CartPage.module.css";
+import { useNavigate } from "react-router-dom";
+
 
 const CartPage = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
 
   const fetchCart = async () => {
     try {
@@ -145,23 +149,27 @@ const CartPage = () => {
                 </span>
               </div>
 
-              <button className={styles.checkoutBtn}>
-                <svg
-                  className={styles.checkoutIcon}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 13L9 17L19 7"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Thanh toán
-              </button>
+              <button
+  className={styles.checkoutBtn}
+  onClick={() => navigate("/payment")}
+>
+  <svg
+    className={styles.checkoutIcon}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M5 13L9 17L19 7"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+  Thanh toán
+</button>
+
 
               <div className={styles.badges}>
                 <div className={styles.badgeItem}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axiosClientUser from "../../api/axiosClientUser";
 import VoucherModal from "./VoucherModal";
 import QrPaymentModal from "./QrPaymentModal";
@@ -10,6 +10,7 @@ import "./payment.css";
 export default function PaymentPage() {
   // ===== ROUTER STATE =====
   const location = useLocation();
+  const navigate = useNavigate();
   const orderType = location.state?.orderType || "CART";
   const directItems = location.state?.items || [];
   const isDirectOrder = orderType === "DIRECT";
@@ -247,9 +248,12 @@ export default function PaymentPage() {
 
       // ✅ COD: chỉ tạo order
       if (paymentMethod === "cod") {
-        alert("Đặt hàng thành công! (COD)");
-        return;
-      }
+      alert("Đặt hàng thành công! (COD)");
+      navigate(`/profile/orders/${orderId}`, {
+        replace: true,
+      });
+      return;
+    }
 
       // ✅ VNPAY / SHOPEEPAY: mở QR DEMO
       if (paymentMethod === "vnpay" || paymentMethod === "shopeepay") {
@@ -267,28 +271,34 @@ export default function PaymentPage() {
   };
 
   const handleConfirmQrPayment = async () => {
-    try {
-      if (!pendingOrderId) {
-        console.error("Không tìm thấy order để thanh toán!");
-        return;
-      }
-
-      await axiosClientUser.post("/Payments", {
-        orderID: pendingOrderId,
-        paymentMethod: paymentMethodMap[paymentMethod],
-        transactionID: "QR-DEMO-" + Date.now(),
-        amount: finalPrice,
-      });
-
-      // ✅ Không dùng alert, chỉ đóng modal
-      setShowQr(false);
-    } catch (err) {
-      console.error("Confirm payment error:", err);
-      alert(
-        "Thanh toán thất bại: " + (err.response?.data?.message || err.message)
-      );
+  try {
+    if (!pendingOrderId) {
+      console.error("Không tìm thấy order để thanh toán!");
+      return;
     }
-  };
+
+    await axiosClientUser.post("/Payments", {
+      orderID: pendingOrderId,
+      paymentMethod: paymentMethodMap[paymentMethod],
+      transactionID: "QR-DEMO-" + Date.now(),
+      amount: finalPrice,
+    });
+
+    setShowQr(false);
+
+    // 👉 ĐIỀU HƯỚNG ĐÚNG
+    navigate(`/profile/orders/${pendingOrderId}`, {
+      replace: true,
+    });
+
+  } catch (err) {
+    console.error("Confirm payment error:", err);
+    alert(
+      "Thanh toán thất bại: " + (err.response?.data?.message || err.message)
+    );
+  }
+};
+
 
   // ===== HÀNG VOUCHER =====
   const handleSelectVoucher = (voucherObj) => {

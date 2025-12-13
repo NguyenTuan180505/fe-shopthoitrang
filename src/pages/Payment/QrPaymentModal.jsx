@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./qrModal.css";
 
+
 export default function QrPaymentModal({ isOpen, onConfirm, onClose, method, orderId }) {
   const navigate = useNavigate();
 
@@ -13,7 +14,7 @@ export default function QrPaymentModal({ isOpen, onConfirm, onClose, method, ord
     // Chờ 300ms để modal đóng, rồi điều hướng
     setTimeout(() => {
       if (orderId) {
-        navigate(`/orders/${orderId}`);
+        navigate(`/profile/orders/${orderId}`);
       }
     }, 300);
   };

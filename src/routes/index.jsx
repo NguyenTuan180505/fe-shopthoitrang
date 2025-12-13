@@ -27,6 +27,14 @@ export const router = createBrowserRouter([
       },
 
       // ============================
+      // CART
+      // ============================
+      {
+        path: "cart",
+        element: <CartPage />,
+      },
+
+      // ============================
       // PAYMENT (PROTECTED)
       // ============================
       {
@@ -39,8 +47,7 @@ export const router = createBrowserRouter([
       },
 
       // ============================
-      // REVIEW LIST (PROTECTED)
-      // /reviews/:productId
+      // REVIEW
       // ============================
       {
         path: "reviews/:productId",
@@ -50,11 +57,6 @@ export const router = createBrowserRouter([
           </UserRoute>
         ),
       },
-
-      // ============================
-      // WRITE REVIEW (PROTECTED)
-      // /reviews/:productId/write
-      // ============================
       {
         path: "reviews/:productId/write",
         element: (
@@ -65,7 +67,7 @@ export const router = createBrowserRouter([
       },
 
       // ============================
-      // PROFILE
+      // SHOP
       // ============================
       {
         path: "shop",
@@ -75,6 +77,10 @@ export const router = createBrowserRouter([
         path: "product/:id",
         element: <ProductDetailPage />,
       },
+
+      // ============================
+      // PROFILE (PROTECTED)
+      // ============================
       {
         path: "profile",
         element: (
