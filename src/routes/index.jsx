@@ -4,8 +4,15 @@ import HomePage from "../pages/Home/HomePage";
 import ShopPage from "../pages/Shop/ShopPage";
 import ProductDetailPage from "../pages/ProductDetail/ProductDetailPage";
 import Profile from "../pages/Profile/Profile";
+import OrderList from "../pages/Profile/OrderList";
+import OrderDetail from "../pages/Profile/OrderDetail";
+import Address from "../pages/Profile/Address";
 import Login from "../pages/Login/Login";
+import VerifyOtp from "../pages/Login/VerifyOtp";
 import Signup from "../pages/Signup/Signup";
+import Payment from "../pages/Payment/Payment";
+import ReviewList from "../pages/Review/ReviewList";
+import ReviewForm from "../pages/Review/ReviewForm";
 import UserRoute from "./UserRoute";
 import CartPage from "../pages/Cart/CartPage";
 
@@ -18,6 +25,48 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+
+      // ============================
+      // PAYMENT (PROTECTED)
+      // ============================
+      {
+        path: "payment",
+        element: (
+          <UserRoute>
+            <Payment />
+          </UserRoute>
+        ),
+      },
+
+      // ============================
+      // REVIEW LIST (PROTECTED)
+      // /reviews/:productId
+      // ============================
+      {
+        path: "reviews/:productId",
+        element: (
+          <UserRoute>
+            <ReviewList />
+          </UserRoute>
+        ),
+      },
+
+      // ============================
+      // WRITE REVIEW (PROTECTED)
+      // /reviews/:productId/write
+      // ============================
+      {
+        path: "reviews/:productId/write",
+        element: (
+          <UserRoute>
+            <ReviewForm />
+          </UserRoute>
+        ),
+      },
+
+      // ============================
+      // PROFILE
+      // ============================
       {
         path: "shop",
         element: <ShopPage />,
@@ -33,19 +82,37 @@ export const router = createBrowserRouter([
             <Profile />
           </UserRoute>
         ),
+        children: [
+          {
+            path: "addresses",
+            element: <Address />,
+          },
+          {
+            path: "orders",
+            element: <OrderList />,
+            children: [
+              {
+                path: ":id",
+                element: <OrderDetail />,
+              },
+            ],
+          },
+        ],
       },
+
       {
         path: "login",
         element: <Login />,
       },
       {
-        path: "/signup",
-        element: <Signup />,
-      },
-      {
-        path: "/cart",
-        element: <CartPage />,
+        path: "verify-otp",
+        element: <VerifyOtp />,
       },
     ],
+  },
+
+  {
+    path: "/signup",
+    element: <Signup />,
   },
 ]);

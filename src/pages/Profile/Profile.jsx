@@ -7,10 +7,10 @@ import {
   LogOut,
 } from "lucide-react";
 import { useUserAuth } from "../../context/UserAuthContext";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import OrderList from "./OrderList";
 import "./Profile.css";
 import Address from "./Address";
-
 
 // ==========================
 //  MODAL XÁC NHẬN ĐĂNG XUẤT
@@ -171,11 +171,13 @@ function ThongTinTaiKhoan({ user }) {
 //        SIDEBAR
 // ==========================
 function Sidebar({ activeTab, setActiveTab, onLogout }) {
+  const navigate = useNavigate();
+
   const menuItems = [
-    { id: "thong-tin", title: "Thông tin tài khoản", icon: Edit3 },
-    { id: "so-dia-chi", title: "Số địa chỉ", icon: MapPin },
-    { id: "don-hang", title: "Đơn hàng", icon: Package },
-    { id: "the-thanh-vien", title: "Thẻ thành viên", icon: Users },
+    { id: "thong-tin", title: "Thông tin tài khoản", icon: Edit3, path: "/profile" },
+    { id: "so-dia-chi", title: "Số địa chỉ", icon: MapPin, path: "/profile/addresses" },
+    { id: "don-hang", title: "Đơn hàng", icon: Package, path: "/profile/orders" },
+    { id: "the-thanh-vien", title: "Thẻ thành viên", icon: Users, path: "/profile/membership" },
   ];
 
   return (
@@ -186,7 +188,10 @@ function Sidebar({ activeTab, setActiveTab, onLogout }) {
         <div
           key={item.id}
           className={`menu-item ${activeTab === item.id ? "active" : ""}`}
-          onClick={() => setActiveTab(item.id)}
+          onClick={() => {
+            setActiveTab(item.id);
+            navigate(item.path);
+          }}
         >
           <item.icon size={18} />
           <span>{item.title}</span>
@@ -206,23 +211,54 @@ function Sidebar({ activeTab, setActiveTab, onLogout }) {
 // ==========================
 export default function Profile() {
   const { user, logout } = useUserAuth();
-  const [activeTab, setActiveTab] = useState("thong-tin");
+  const location = useLocation();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  // ✅ Xác định tab hiện tại dựa trên URL
+  const getActiveTab = () => {
+    if (location.pathname.includes("/orders")) return "don-hang";
+    if (location.pathname.includes("/addresses")) return "so-dia-chi";
+    if (location.pathname.includes("/membership")) return "the-thanh-vien";
+    return "thong-tin";
+  };
+
+  const activeTab = getActiveTab();
+
+  // ✅ Render content dựa trên URL
+  const renderContent = () => {
+    // Nếu là nested route (/profile/orders/:id), render Outlet cho OrderDetail
+    if (location.pathname.includes("/orders/")) {
+      return <Outlet />;
+    }
+
+    // Nếu là /profile/orders (không có ID), render OrderList
+    if (location.pathname === "/profile/orders") {
+      return <OrderList />;
+    }
+
+    if (location.pathname === "/profile/addresses") {
+      return <Address />;
+    }
+
+    if (location.pathname === "/profile/membership") {
+      return <div>Đang Cập Nhật...</div>;
+    }
+
+    // Default: thông tin tài khoản
+    return <ThongTinTaiKhoan user={user} />;
+  };
 
   return (
     <>
       <div className="app-container">
         <Sidebar
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
+          setActiveTab={() => {}}
           onLogout={() => setShowLogoutModal(true)}
         />
 
         <div className="main-content">
-          {activeTab === "thong-tin" && <ThongTinTaiKhoan user={user} />}
-          {activeTab === "so-dia-chi" && <Address />}
-          {activeTab === "don-hang" && <OrderList />}
-          {activeTab === "the-thanh-vien" && <div>Đang Cập Nhật...</div>}
+          {renderContent()}
         </div>
       </div>
 

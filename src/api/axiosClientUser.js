@@ -8,17 +8,23 @@ const axiosClientUser = axios.create({
   },
 });
 
-// THÊM TOKEN USER VÀO REQUEST
+// ============================
+// GẮN TOKEN VÀO REQUEST
+// ============================
 axiosClientUser.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("user_token"); // token user
-    if (token) config.headers.Authorization = `Bearer ${token}`;
+    const token = localStorage.getItem("user_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// XỬ LÝ LỖI 401 → LOGOUT USER
+// ============================
+// KHÔNG REDIRECT Ở ĐÂY ❌
+// ============================
 axiosClientUser.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -26,8 +32,10 @@ axiosClientUser.interceptors.response.use(
       localStorage.removeItem("user_token");
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );
+
 
 export default axiosClientUser;

@@ -2,21 +2,18 @@
    Address Page Layout
 =============================== */
 .content-section {
-  background-color: #f8f9fa;
-  padding: 40px 20px;
-  min-height: 100vh;
-}
-
-.content-section > * {
-  max-width: 1000px;
-  margin: 0 auto;
+  background-color: #fff;
+  padding: 40px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
 .section-title {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 8px;
+  color: #03341d;
+  margin-bottom: 24px;
   letter-spacing: -0.5px;
   animation: slideDown 0.5s ease-out;
 }
@@ -45,45 +42,48 @@
 .btn-add-address {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 12px 24px;
-  border: 2px solid #059669;
-  background-color: #fff;
-  color: #059669;
-  border-radius: 6px;
-  font-size: 14px;
+  width: 12em;
+  height: 3.2em;
+  padding: 0;
+  border: none;
+  border-radius: 30em;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 15px;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-bottom: 32px;
   position: relative;
   overflow: hidden;
+  z-index: 1;
+  margin-bottom: 32px;
+  box-shadow: 6px 6px 12px #c5c5c5,
+              -6px -6px 12px #ffffff;
+  transition: color 0.5s ease;
 }
 
 .btn-add-address::before {
   content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
   width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(5, 150, 105, 0.15);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  height: 3.2em;
+  border-radius: 30em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, #059669 0%, #34d399 100%);
+  transition: width 0.5s ease;
+  display: block;
+  z-index: -1;
 }
 
 .btn-add-address:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  color: white;
-  border-color: #059669;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.35);
+  color: #fff;
 }
 
 .btn-add-address:hover::before {
-  width: 300px;
-  height: 300px;
+  width: 12em;
 }
 
 /* ===============================
@@ -482,13 +482,23 @@
 /* ===============================
    Responsive
 =============================== */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .content-section {
-    padding: 24px 16px;
+    padding: 30px;
   }
 
   .section-title {
     font-size: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-section {
+    padding: 24px;
+  }
+
+  .section-title {
+    font-size: 24px;
   }
 
   .addresses-grid {
@@ -536,7 +546,7 @@
 
 @media (max-width: 480px) {
   .section-title {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .modal-header h2 {
