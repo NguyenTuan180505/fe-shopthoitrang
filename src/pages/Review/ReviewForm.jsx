@@ -124,13 +124,17 @@ export default function ReviewForm() {
       setUploadedFiles([]);
       setPreviewUrls([]);
 
-      navigate(`/reviews/${productId}`);
+      navigate(`/product/${productId}`);
     } catch (err) {
       console.error('Lỗi gửi review:', err);
       setError('Gửi đánh giá thất bại. Vui lòng thử lại!');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCancel = () => {
+    navigate(`/product/${productId}`);
   };
 
   // ============================
@@ -141,7 +145,7 @@ export default function ReviewForm() {
       <div className="breadcrumb">
         <span className="breadcrumb-link" onClick={() => navigate('/')}>Trang chủ</span>
         <span className="breadcrumb-separator">/</span>
-        <span className="breadcrumb-link" onClick={() => navigate(`/reviews/${productId}`)}>Đánh giá</span>
+        <span className="breadcrumb-link" onClick={() => navigate(`/product/${productId}`)}>Chi tiết sản phẩm</span>
         <span className="breadcrumb-separator">/</span>
         <span className="breadcrumb-current">Viết bài đánh giá</span>
       </div>
@@ -333,7 +337,7 @@ export default function ReviewForm() {
           </button>
           <button
             type="button"
-            onClick={() => navigate(`/reviews/${productId}`)}
+            onClick={handleCancel}
             className="btn-cancel"
             disabled={loading}
           >

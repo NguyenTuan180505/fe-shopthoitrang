@@ -25,6 +25,155 @@
   margin-bottom: 60px;
 }
 
+/* ===== MODAL OVERLAY ===== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===== MODAL CONTENT ===== */
+.modalContent {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.modalClose {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.modalClose:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.modalBody {
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.modalBody p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.modalFooter {
+  display: flex;
+  gap: 12px;
+  padding: 24px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+/* ===== MODAL BUTTONS ===== */
+.cancelBtn {
+  flex: 1;
+  padding: 14px 24px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #4b5563;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelBtn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.cancelBtn:active {
+  transform: scale(0.98);
+}
+
+.loginBtn {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.loginBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.loginBtn:active {
+  transform: translateY(0);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* ===== PRODUCT IMAGE ===== */
 .imageBox {
   position: relative;
@@ -177,11 +326,19 @@
   margin: 0;
 }
 
+/* ===== BUTTON GROUP ===== */
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 /* ===== BUY BUTTON ===== */
 .buyBtn {
   width: 100%;
   padding: 18px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   border: none;
   border-radius: 12px;
@@ -203,6 +360,37 @@
 }
 
 .buyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== BUY NOW BUTTON ===== */
+.buyNowBtn {
+  width: 100%;
+  padding: 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.buyNowBtn:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.buyNowBtn:active {
+  transform: translateY(0);
+}
+
+.buyNowBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -335,6 +523,16 @@
     font-size: 1.5rem;
   }
 
+  .buttonGroup {
+    grid-template-columns: 1fr;
+  }
+
+  .buyBtn,
+  .buyNowBtn {
+    padding: 16px;
+    font-size: 0.95rem;
+  }
+
   .relatedList {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 16px;
@@ -352,5 +550,18 @@
   .relatedPrice {
     font-size: 1rem;
     margin: 0 12px 12px 12px;
+  }
+
+  .modalContent {
+    width: 95%;
+    max-width: 400px;
+  }
+
+  .modalHeader h2 {
+    font-size: 1.3rem;
+  }
+
+  .modalBody p {
+    font-size: 1rem;
   }
 }

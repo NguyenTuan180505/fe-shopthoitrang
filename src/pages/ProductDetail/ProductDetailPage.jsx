@@ -3,13 +3,18 @@ import { useEffect, useState } from "react";
 import styles from "./ProductDetailPage.module.css";
 import { cartService } from "../../services/cart.service";
 import ProductReviews from "../../components/ProductReviews/ProductReviews";
+import { useUserAuth } from "../../context/UserAuthContext";
+
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useUserAuth();
 
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const increaseQty = () => setQuantity((prev) => prev + 1);
   const decreaseQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
@@ -41,11 +46,16 @@ export default function ProductDetailPage() {
     .slice(0, 4);
 
   const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
     try {
       setAdding(true);
+
       await cartService.addToCart(product.productID, quantity);
 
-      // Hiệu ứng thông báo thành công
       const successMsg = document.createElement("div");
       successMsg.className = styles.successToast;
       successMsg.textContent = "✓ Đã thêm vào giỏ hàng";
@@ -54,18 +64,96 @@ export default function ProductDetailPage() {
       setTimeout(() => successMsg.remove(), 2000);
     } catch (error) {
       console.error("Lỗi thêm vào giỏ:", error);
-      if (error.response?.status === 401) {
-        alert("Vui lòng đăng nhập để thêm vào giỏ hàng");
-      } else {
-        alert("Không thể thêm sản phẩm vào giỏ");
-      }
+      alert("Không thể thêm sản phẩm vào giỏ");
     } finally {
       setAdding(false);
     }
   };
 
+  const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      setBuying(true);
+      navigate("/payment", {
+        state: {
+          orderType: "DIRECT",
+          items: [
+            {
+              productId: product.productID,
+              quantity: quantity,
+              unitPrice: product.price,
+              productImage: product.imageUrl,
+              productName: product.productName,
+              discountPercent: product.discount,
+              product: {
+                productName: product.productName,
+                discountPercent: product.discount,
+                color: product.color,
+                size: product.size,
+                sku: product.sku,
+              },
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      console.error("Lỗi khi chuyển đến trang thanh toán:", error);
+      alert("Không thể chuyển đến trang thanh toán");
+      setBuying(false);
+    }
+  };
+
+  const handleLoginClick = () => {
+    setShowLoginModal(false);
+    navigate("/login");
+  };
+
+  const handleCancelClick = () => {
+    setShowLoginModal(false);
+  };
+
   return (
     <div className={styles.page}>
+      {/* Modal đăng nhập */}
+      {showLoginModal && (
+        <div className={styles.modalOverlay} onClick={handleCancelClick}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Yêu cầu đăng nhập</h2>
+              <button 
+                className={styles.modalClose} 
+                onClick={handleCancelClick}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <p>Vui lòng đăng nhập để thực hiện mua hàng</p>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button 
+                className={styles.cancelBtn}
+                onClick={handleCancelClick}
+              >
+                Hủy
+              </button>
+              <button 
+                className={styles.loginBtn}
+                onClick={handleLoginClick}
+              >
+                Đăng nhập
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.container}>
         <div className={styles.imageBox}>
           {product.discount > 0 && (
@@ -105,18 +193,30 @@ export default function ProductDetailPage() {
             <button onClick={increaseQty}>+</button>
           </div>
 
-          <button
-            className={styles.buyBtn}
-            onClick={handleAddToCart}
-            disabled={adding}
-          >
-            {adding ? "Đang thêm..." : "🛒 Thêm vào giỏ hàng"}
-          </button>
+          <div className={styles.buttonGroup}>
+            <button
+              className={styles.buyBtn}
+              onClick={handleAddToCart}
+              disabled={adding}
+            >
+              {adding ? "Đang thêm..." : "🛒 Thêm vào giỏ hàng"}
+            </button>
+
+            <button
+              className={styles.buyNowBtn}
+              onClick={handleBuyNow}
+              disabled={buying}
+            >
+              {buying ? "Đang xử lý..." : "⚡ Mua Ngay"}
+            </button>
+          </div>
         </div>
       </div>
+
       <div className="container">
         <ProductReviews productId={id} />
       </div>
+
       <div className={styles.relatedSection}>
         <h2>Sản phẩm tương tự</h2>
 

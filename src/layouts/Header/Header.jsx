@@ -1,13 +1,15 @@
-import { Link, NavLink } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
 import ShoppingBag from "../../assets/icons/shopping-bag.svg";
 import { useUserAuth } from "../../context/UserAuthContext";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useUserAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // Đóng dropdown khi click bên ngoài
   useEffect(() => {
@@ -26,8 +28,61 @@ export default function Header() {
     setShowDropdown(false);
   };
 
+  const handleCartClick = () => {
+    if (!isAuthenticated) {
+      setShowCartModal(true);
+      return;
+    }
+    navigate("/cart");
+  };
+
+  const handleCartLoginClick = () => {
+    setShowCartModal(false);
+    navigate("/login");
+  };
+
+  const handleCartCancelClick = () => {
+    setShowCartModal(false);
+  };
+
   return (
     <header className={styles.header}>
+      {/* Modal giỏ hàng */}
+      {showCartModal && (
+        <div className={styles.modalOverlay} onClick={handleCartCancelClick}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Yêu cầu đăng nhập</h2>
+              <button 
+                className={styles.modalClose} 
+                onClick={handleCartCancelClick}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className={styles.modalBody}>
+              <p>Vui lòng đăng nhập để xem giỏ hàng của bạn</p>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button 
+                className={styles.cancelBtn}
+                onClick={handleCartCancelClick}
+              >
+                Hủy
+              </button>
+              <button 
+                className={styles.loginBtn_modal}
+                onClick={handleCartLoginClick}
+              >
+                Đăng nhập
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="container">
         <div className={styles.inner}>
           <div className={styles.logo}>FASHION</div>
@@ -74,13 +129,17 @@ export default function Header() {
           {/* BÊN PHẢI */}
           <div className={styles.right}>
             {/* Biểu tượng giỏ hàng */}
-            <Link to="/cart" className={styles.cartIconWrapper}>
+            <div
+              className={styles.cartIconWrapper}
+              onClick={handleCartClick}
+              style={{ cursor: "pointer" }}
+            >
               <img
                 src={ShoppingBag}
                 alt="biểu_tượng_giỏ_hàng"
                 className={styles.cartIcon}
               />
-            </Link>
+            </div>
 
             {/* ĐĂNG NHẬP / PROFILE DROPDOWN */}
             {!isAuthenticated ? (
@@ -112,7 +171,7 @@ export default function Header() {
                   </div>
                   <div className={styles.profileInfo}>
                     <div className={styles.profileName}>Tài khoản</div>
-                    <div className={styles.profileEmail}>{user?.email}</div>
+                    <div className={styles.profileEmail}>{user?.fullName}</div>
                   </div>
                   <svg
                     className={`${styles.dropdownArrow} ${
@@ -135,10 +194,13 @@ export default function Header() {
                 {/* Dropdown Menu */}
                 {showDropdown && (
                   <div className={styles.dropdownMenu}>
-                    <Link
-                      to="/profile"
+                    <button
+                      type="button"
                       className={styles.dropdownItem}
-                      onClick={() => setShowDropdown(false)}
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate("/profile");
+                      }}
                     >
                       <svg
                         viewBox="0 0 24 24"
@@ -154,7 +216,7 @@ export default function Header() {
                         />
                       </svg>
                       <span>Thông tin cá nhân</span>
-                    </Link>
+                    </button>
 
                     <div className={styles.dropdownDivider}></div>
 

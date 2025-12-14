@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./ProductReviews.module.css";
 
 export default function ProductReviews({ productId }) {
+  const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,11 +67,15 @@ export default function ProductReviews({ productId }) {
       );
       setFilteredReviews(filtered);
     }
-    setShowAll(false); // Reset về 3 đánh giá khi đổi filter
+    setShowAll(false);
   };
 
   const handleFilterChange = (rating) => {
     setSelectedFilter(rating);
+  };
+
+  const handleWriteReview = () => {
+    navigate(`/reviews/${productId}/write`);
   };
 
   const renderStars = (rating) => {
@@ -107,15 +113,19 @@ export default function ProductReviews({ productId }) {
 
   if (reviews.length === 0) {
     return (
-      <div className={styles.noReviews}>
-        <div className={styles.noReviewsIcon}>💬</div>
-        <h3>Chưa có đánh giá</h3>
-        <p>Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+      <div className={styles.noReviewsContainer}>
+        <div className={styles.noReviews}>
+          <div className={styles.noReviewsIcon}>💬</div>
+          <h3>Chưa có đánh giá</h3>
+          <p>Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+        </div>
+        <button className={styles.writeReviewBtn} onClick={handleWriteReview}>
+          ✍️ Viết đánh giá
+        </button>
       </div>
     );
   }
 
-  // Hiển thị 3 đánh giá đầu hoặc tất cả
   const displayedReviews = showAll
     ? filteredReviews
     : filteredReviews.slice(0, 3);
@@ -123,7 +133,12 @@ export default function ProductReviews({ productId }) {
 
   return (
     <div className={styles.reviewsSection}>
-      <h2 className={styles.title}>Đánh giá sản phẩm</h2>
+      <div className={styles.titleWithButton}>
+        <h2 className={styles.title}>Đánh giá sản phẩm</h2>
+        <button className={styles.writeReviewBtn} onClick={handleWriteReview}>
+          ✍️ Viết đánh giá
+        </button>
+      </div>
 
       {/* Rating Summary */}
       <div className={styles.summary}>
