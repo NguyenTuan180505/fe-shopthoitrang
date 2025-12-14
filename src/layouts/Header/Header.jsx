@@ -1,10 +1,30 @@
 import { Link, NavLink } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import styles from "./Header.module.css";
 import ShoppingBag from "../../assets/icons/shopping-bag.svg";
 import { useUserAuth } from "../../context/UserAuthContext";
 
 export default function Header() {
   const { user, isAuthenticated, logout } = useUserAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Đóng dropdown khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setShowDropdown(false);
+  };
 
   return (
     <header className={styles.header}>
@@ -12,7 +32,7 @@ export default function Header() {
         <div className={styles.inner}>
           <div className={styles.logo}>FASHION</div>
 
-          {/* NAVIGATION */}
+          {/* THANH ĐIỀU HƯỚNG */}
           <nav className={styles.nav}>
             <NavLink
               to="/"
@@ -20,7 +40,7 @@ export default function Header() {
                 isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
               }
             >
-              HOME
+              TRANG CHỦ
             </NavLink>
 
             <NavLink
@@ -29,7 +49,7 @@ export default function Header() {
                 isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
               }
             >
-              SHOP
+              CỬA HÀNG
             </NavLink>
 
             <NavLink
@@ -38,7 +58,7 @@ export default function Header() {
                 isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
               }
             >
-              FEATURES
+              TÍNH NĂNG
             </NavLink>
 
             <NavLink
@@ -47,37 +67,118 @@ export default function Header() {
                 isActive ? `${styles.navItem} ${styles.active}` : styles.navItem
               }
             >
-              CONTACT
+              LIÊN HỆ
             </NavLink>
           </nav>
 
-          {/* RIGHT SIDE */}
+          {/* BÊN PHẢI */}
           <div className={styles.right}>
-            {/* Cart icon */}
+            {/* Biểu tượng giỏ hàng */}
             <Link to="/cart" className={styles.cartIconWrapper}>
               <img
                 src={ShoppingBag}
-                alt="cart_icon"
+                alt="biểu_tượng_giỏ_hàng"
                 className={styles.cartIcon}
               />
             </Link>
 
-            {/* LOGIN / LOGOUT */}
+            {/* ĐĂNG NHẬP / PROFILE DROPDOWN */}
             {!isAuthenticated ? (
-              // Chưa login → nút LOGIN
+              // Chưa đăng nhập → nút ĐĂNG NHẬP
               <Link to="/login">
-                <button className={styles.loginBtn}>LOGIN</button>
+                <button className={styles.loginBtn}>ĐĂNG NHẬP</button>
               </Link>
             ) : (
-              // Đã login → Hiện email + nút Logout
-              <div className={styles.userBox}>
-                <Link to="/profile" className={styles.userEmail}>
-                  {user?.email}
-                </Link>
+              // Đã đăng nhập → Profile Dropdown
+              <div className={styles.profileWrapper} ref={dropdownRef}>
+                <div
+                  className={styles.profileTrigger}
+                  onClick={() => setShowDropdown(!showDropdown)}
+                >
+                  <div className={styles.profileIcon}>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <div className={styles.profileInfo}>
+                    <div className={styles.profileName}>Tài khoản</div>
+                    <div className={styles.profileEmail}>{user?.email}</div>
+                  </div>
+                  <svg
+                    className={`${styles.dropdownArrow} ${
+                      showDropdown ? styles.dropdownArrowOpen : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 9L12 15L18 9"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
 
-                <button className={styles.loginBtn} onClick={logout}>
-                  LOGOUT
-                </button>
+                {/* Dropdown Menu */}
+                {showDropdown && (
+                  <div className={styles.dropdownMenu}>
+                    <Link
+                      to="/profile"
+                      className={styles.dropdownItem}
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span>Thông tin cá nhân</span>
+                    </Link>
+
+                    <div className={styles.dropdownDivider}></div>
+
+                    <button
+                      className={styles.dropdownItem}
+                      onClick={handleLogout}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9M16 17L21 12M21 12L16 7M21 12H9"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span>Đăng xuất</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

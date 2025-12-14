@@ -1,12 +1,12 @@
 import styles from "./ProductCard.module.css";
-
+import { Link } from "react-router-dom";
 export default function ProductCard({ product }) {
   const finalPrice = product.price - (product.discount * product.price) / 100;
 
   const formatVND = (value) => value.toLocaleString("vi-VN") + " VND";
 
   return (
-    <div className={styles.card}>
+    <Link to={`/product/${product.productID}`} className={styles.card}>
       {/* IMAGE */}
       <div
         className={styles.image}
@@ -36,6 +36,6 @@ export default function ProductCard({ product }) {
           <span className={styles.star}>★</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

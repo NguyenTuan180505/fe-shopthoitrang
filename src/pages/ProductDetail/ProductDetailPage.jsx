@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styles from "./ProductDetailPage.module.css";
 import { cartService } from "../../services/cart.service";
+import ProductReviews from "../../components/ProductReviews/ProductReviews";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -113,7 +114,9 @@ export default function ProductDetailPage() {
           </button>
         </div>
       </div>
-
+      <div className="container">
+        <ProductReviews productId={id} />
+      </div>
       <div className={styles.relatedSection}>
         <h2>Sản phẩm tương tự</h2>
 

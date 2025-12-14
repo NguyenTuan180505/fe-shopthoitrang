@@ -5,28 +5,28 @@ export default function HeroSection() {
     <section className={styles.hero}>
       <div className="container">
         <div className={styles.inner}>
-          {/* LEFT TEXT CONTENT */}
+          {/* NỘI DUNG CHỮ BÊN TRÁI */}
           <div className={styles.left}>
             <h1 className={styles.title}>
-              Discover and <br />
-              Find Your Own <br />
-              Fashion!
+              Khám phá và <br />
+              Tìm phong cách <br />
+              Của riêng bạn!
             </h1>
 
             <p className={styles.desc}>
-              Explore our curated collection of stylish clothing and accessories
-              tailored to your unique taste.
+              Khám phá bộ sưu tập quần áo và phụ kiện thời trang được tuyển
+              chọn, phù hợp với phong cách và cá tính riêng của bạn.
             </p>
 
-            <button className={styles.btn}>EXPLORE NOW</button>
+            <button className={styles.btn}>KHÁM PHÁ NGAY</button>
           </div>
 
-          {/* RIGHT IMAGE */}
+          {/* HÌNH ẢNH BÊN PHẢI */}
           <div className={styles.right}>
             <div className={styles.imageBox}>
               <img
                 src="/images/model.png"
-                alt="model"
+                alt="người_mẫu"
                 className={styles.model}
               />
             </div>

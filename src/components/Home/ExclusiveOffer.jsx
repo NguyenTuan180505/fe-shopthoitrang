@@ -45,7 +45,6 @@ export default function ExclusiveOffer() {
   }, [endTime]);
 
   const handleBuyNow = () => {
-    window.scrollTo(0, 0);
     navigate("/shop");
   };
 
@@ -67,10 +66,10 @@ export default function ExclusiveOffer() {
           </div>
 
           <div className={styles.content}>
-            <h2 className={styles.title}>Exclusive offer</h2>
+            <h2 className={styles.title}>Ưu đãi độc quyền</h2>
             <p className={styles.description}>
-              Unlock the ultimate style upgrade with our exclusive offer! Enjoy
-              savings of up to 40% off on our latest New Arrivals
+              Nâng tầm phong cách của bạn với ưu đãi độc quyền của chúng tôi!
+              Tận hưởng mức giảm giá lên đến 40% cho các sản phẩm mới nhất.
             </p>
 
             <div className={styles.countdown}>
@@ -78,30 +77,30 @@ export default function ExclusiveOffer() {
                 <div className={styles.timeValue}>
                   {String(timeLeft.days).padStart(2, "0")}
                 </div>
-                <div className={styles.timeLabel}>Days</div>
+                <div className={styles.timeLabel}>Ngày</div>
               </div>
               <div className={styles.timeBox}>
                 <div className={styles.timeValue}>
                   {String(timeLeft.hours).padStart(2, "0")}
                 </div>
-                <div className={styles.timeLabel}>Hours</div>
+                <div className={styles.timeLabel}>Giờ</div>
               </div>
               <div className={styles.timeBox}>
                 <div className={styles.timeValue}>
                   {String(timeLeft.minutes).padStart(2, "0")}
                 </div>
-                <div className={styles.timeLabel}>Min</div>
+                <div className={styles.timeLabel}>Phút</div>
               </div>
               <div className={styles.timeBox}>
                 <div className={styles.timeValue}>
                   {String(timeLeft.seconds).padStart(2, "0")}
                 </div>
-                <div className={styles.timeLabel}>Sec</div>
+                <div className={styles.timeLabel}>Giây</div>
               </div>
             </div>
 
             <button className={styles.buyBtn} onClick={handleBuyNow}>
-              BUY NOW
+              MUA NGAY
             </button>
           </div>
         </div>

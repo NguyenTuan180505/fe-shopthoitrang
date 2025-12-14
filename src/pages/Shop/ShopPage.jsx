@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import CategoryFilter from "../../components/Shop/CategoryFilter";
 import ShopProductCard from "../../components/Shop/ShopProductCard";
 import styles from "./ShopPage.module.css";
@@ -6,7 +7,13 @@ import styles from "./ShopPage.module.css";
 export default function ShopPage() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null);
+
+  const [searchParams] = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
+
+  const [activeCategory, setActiveCategory] = useState(
+    categoryFromUrl ? Number(categoryFromUrl) : null
+  );
 
   useEffect(() => {
     fetch("https://localhost:7298/api/categories")
@@ -17,6 +24,15 @@ export default function ShopPage() {
       .then((res) => res.json())
       .then((data) => setProducts(data));
   }, []);
+
+  // Đồng bộ khi user vào từ Trang chủ
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setActiveCategory(Number(categoryFromUrl));
+    } else {
+      setActiveCategory(null);
+    }
+  }, [categoryFromUrl]);
 
   const filteredProducts = activeCategory
     ? products.filter((p) => p.categoryID === activeCategory)
@@ -32,6 +48,7 @@ export default function ShopPage() {
           </p>
         </div>
       </div>
+
       <div className={styles.container}>
         <div className={styles.layout}>
           <CategoryFilter

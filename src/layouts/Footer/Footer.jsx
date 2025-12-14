@@ -8,7 +8,7 @@ export default function Footer() {
         <div className={styles.top}>
           <div className={styles.col}>
             <h2>FASHION</h2>
-            <p>Social Media</p>
+            <p>Mạng xã hội</p>
             <div className={styles.icons}>
               <FaFacebook />
               <FaTwitter />
@@ -17,26 +17,26 @@ export default function Footer() {
           </div>
 
           <div className={styles.col}>
-            <h3>SHOP</h3>
-            <p>Products</p>
-            <p>Overview</p>
-            <p>Pricing</p>
-            <p>Releases</p>
+            <h3>CỬA HÀNG</h3>
+            <p>Sản phẩm</p>
+            <p>Tổng quan</p>
+            <p>Bảng giá</p>
+            <p>Bộ sưu tập mới</p>
           </div>
 
           <div className={styles.col}>
-            <h3>COMPANY</h3>
-            <p>About Us</p>
-            <p>Contact</p>
-            <p>News</p>
-            <p>Support</p>
+            <h3>CÔNG TY</h3>
+            <p>Về chúng tôi</p>
+            <p>Liên hệ</p>
+            <p>Tin tức</p>
+            <p>Hỗ trợ</p>
           </div>
 
           <div className={styles.col}>
-            <h3>STAY UP TO DATE</h3>
+            <h3>CẬP NHẬT THÔNG TIN</h3>
             <div className={styles.inputGroup}>
-              <input placeholder="Enter your email" />
-              <button>SUBMIT</button>
+              <input placeholder="Nhập email của bạn" />
+              <button>GỬI</button>
             </div>
           </div>
         </div>
@@ -44,9 +44,9 @@ export default function Footer() {
         <hr className={styles.line} />
 
         <div className={styles.bottom}>
-          <span>Terms</span>
-          <span>Privacy</span>
-          <span>Cookies</span>
+          <span>Điều khoản</span>
+          <span>Quyền riêng tư</span>
+          <span>Cookie</span>
         </div>
       </div>
     </footer>

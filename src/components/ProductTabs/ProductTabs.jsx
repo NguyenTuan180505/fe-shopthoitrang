@@ -49,7 +49,7 @@ export default function ProductTabs({ products }) {
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.title}>Our products</h2>
+      <h2 className={styles.title}>Sản phẩm của chúng tôi</h2>
 
       {/* TAB BUTTONS */}
       <div className={styles.tabs}>
@@ -66,7 +66,7 @@ export default function ProductTabs({ products }) {
           >
             {tab === "sale" && "SALE"}
             {tab === "hot" && "HOT"}
-            {tab === "new" && "NEW ARRIVALS"}
+            {tab === "new" && "NEW"}
           </button>
         ))}
       </div>
