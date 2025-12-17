@@ -1,0 +1,358 @@
+.page {
+  min-height: 100vh;
+  background: white;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(to bottom, #c9f6d6 0%, #a8e6cf 100%);
+  padding: 100px 0 80px;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #03341d;
+  margin-bottom: 24px;
+}
+
+.heroSubtitle {
+  font-size: 1.3rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Contact Info Section */
+.contactSection {
+  padding: 80px 0;
+  background: white;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.infoCard {
+  text-align: center;
+  padding: 40px 24px;
+  background: #f9fafb;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.infoCard:hover {
+  transform: translateY(-8px);
+  background: white;
+  border-color: #10b981;
+  box-shadow: 0 12px 24px rgba(16, 185, 129, 0.15);
+}
+
+.infoIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.infoCard:hover .infoIcon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.infoIcon span {
+  font-size: 2.5rem;
+}
+
+.infoTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+}
+
+.infoContent {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Form Section */
+.formSection {
+  padding: 80px 0;
+  background: #f9fafb;
+}
+
+.formWrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 60px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.formHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.formTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.formSubtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Form Styles */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #1f2937;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.submitBtn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
+}
+
+/* Success Message */
+.successMessage {
+  text-align: center;
+  padding: 60px 40px;
+}
+
+.successIcon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: white;
+  animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.successMessage h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+}
+
+.successMessage p {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Map Section */
+.mapSection {
+  padding: 80px 0;
+  background: white;
+}
+
+.mapTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin: 0 0 40px 0;
+}
+
+.mapContainer {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+}
+
+.mapContainer iframe {
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .contactGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 80px 0 60px;
+  }
+
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1.1rem;
+  }
+
+  .contactSection,
+  .formSection,
+  .mapSection {
+    padding: 60px 0;
+  }
+
+  .contactGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .infoCard {
+    padding: 30px 20px;
+  }
+
+  .infoIcon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .infoIcon span {
+    font-size: 2rem;
+  }
+
+  .formWrapper {
+    padding: 40px 24px;
+  }
+
+  .formTitle {
+    font-size: 2rem;
+  }
+
+  .formSubtitle {
+    font-size: 1rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .form {
+    gap: 20px;
+  }
+
+  .successMessage {
+    padding: 40px 20px;
+  }
+
+  .successIcon {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+
+  .successMessage h3 {
+    font-size: 1.5rem;
+  }
+
+  .successMessage p {
+    font-size: 1rem;
+  }
+
+  .mapTitle {
+    font-size: 2rem;
+  }
+
+  .mapContainer {
+    border-radius: 12px;
+  }
+
+  .mapContainer iframe {
+    height: 350px;
+  }
+}
