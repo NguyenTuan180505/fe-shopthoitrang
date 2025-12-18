@@ -1,9 +1,7 @@
 import axiosClientUser from "./axiosClientUser";
 
 export const getReviewsByProductId = (productId) => {
-  return axiosClientUser.get(
-    `/Reviews/product/${productId}`
-  );
+  return axiosClientUser.get(`/Reviews/product/${productId}`);
 };
 
 export const createReview = (payload) => {

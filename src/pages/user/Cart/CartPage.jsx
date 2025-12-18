@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { cartService } from "../../services/cart.service";
-import CartItem from "../../components/Cart/CartItem";
+import { cartService } from "../../../services/cart.service";
+import CartItem from "../../../components/Cart/CartItem";
 import styles from "./CartPage.module.css";
 import { useNavigate } from "react-router-dom";
 

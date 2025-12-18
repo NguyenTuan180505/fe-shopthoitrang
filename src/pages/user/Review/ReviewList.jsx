@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ReviewList.css';
-import { getReviewsByProductId, deleteReview } from '../../api/reviewApi';
+import { getReviewsByProductId, deleteReview } from '../../../api/reviewApi';
 
 export default function ReviewList() {
   const { productId } = useParams();

@@ -1,7 +1,7 @@
 // src/pages/admin/Category/CategoryForm.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import axiosClient from "../../../api/axiosClient";
+import axiosClient from "../../../api/axiosClientUser";
 
 export default function CategoryForm() {
   const { id } = useParams();

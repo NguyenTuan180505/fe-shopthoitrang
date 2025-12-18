@@ -1,43 +1,40 @@
 import { createBrowserRouter } from "react-router-dom";
+
+// ===== USER =====
 import MainLayout from "../layouts/Mainlayout";
-import HomePage from "../pages/Home/HomePage";
-import ShopPage from "../pages/Shop/ShopPage";
-import ProductDetailPage from "../pages/ProductDetail/ProductDetailPage";
-import Profile from "../pages/Profile/Profile";
-import OrderList from "../pages/Profile/OrderList";
-import OrderDetail from "../pages/Profile/OrderDetail";
-import Address from "../pages/Profile/Address";
-import Login from "../pages/Login/Login";
-import VerifyOtp from "../pages/Login/VerifyOtp";
+import HomePage from "../pages/user/Home/HomePage";
+import ShopPage from "../pages/user/Shop/ShopPage";
+import ProductDetailPage from "../pages/user/ProductDetail/ProductDetailPage";
+import Profile from "../pages/user/Profile/Profile";
+import OrderList from "../pages/user/Profile/OrderList";
+import OrderDetail from "../pages/user/Profile/OrderDetail";
+import Address from "../pages/user/Profile/Address";
+import Login from "../pages/login/Login";
+import VerifyOtp from "../pages/login/VerifyOtp";
 import Signup from "../pages/Signup/Signup";
-import Payment from "../pages/Payment/Payment";
-import ReviewList from "../pages/Review/ReviewList";
-import ReviewForm from "../pages/Review/ReviewForm";
+import Payment from "../pages/user/Payment/Payment";
+import ReviewList from "../pages/user/Review/ReviewList";
+import ReviewForm from "../pages/user/Review/ReviewForm";
+import CartPage from "../pages/user/Cart/CartPage";
+import FeaturesPage from "../pages/user/Features/FeaturesPage";
+import ContactPage from "../pages/user/Contact/ContactPage";
 import UserRoute from "./UserRoute";
-import CartPage from "../pages/Cart/CartPage";
-import FeaturesPage from "../pages/Features/FeaturesPage";
-import ContactPage from "../pages/Contact/ContactPage";
+
+// ===== ADMIN =====
+import AdminLayout from "../layouts/AdminLayout";
+// import AdminLogin from "../pages/admin/Login";
+
 export const router = createBrowserRouter([
+  // ============================
+  // USER ROOT
+  // ============================
   {
     path: "/",
     element: <MainLayout />,
     children: [
-      {
-        index: true,
-        element: <HomePage />,
-      },
+      { index: true, element: <HomePage /> },
+      { path: "cart", element: <CartPage /> },
 
-      // ============================
-      // CART
-      // ============================
-      {
-        path: "cart",
-        element: <CartPage />,
-      },
-
-      // ============================
-      // PAYMENT (PROTECTED)
-      // ============================
       {
         path: "payment",
         element: (
@@ -46,9 +43,7 @@ export const router = createBrowserRouter([
           </UserRoute>
         ),
       },
-      // ============================
-      // REVIEW
-      // ============================
+
       {
         path: "reviews/:productId",
         element: (
@@ -66,32 +61,11 @@ export const router = createBrowserRouter([
         ),
       },
 
-      // ============================
-      // SHOP
-      // ============================
-      {
-        path: "shop",
-        element: <ShopPage />,
-      },
-      // ============================
-      // OTHERS
-      // ============================
-      {
-        path: "features",
-        element: <FeaturesPage />,
-      },
-      {
-        path: "contact",
-        element: <ContactPage />,
-      },
-      {
-        path: "product/:id",
-        element: <ProductDetailPage />,
-      },
+      { path: "shop", element: <ShopPage /> },
+      { path: "features", element: <FeaturesPage /> },
+      { path: "contact", element: <ContactPage /> },
+      { path: "product/:id", element: <ProductDetailPage /> },
 
-      // ============================
-      // PROFILE (PROTECTED)
-      // ============================
       {
         path: "profile",
         element: (
@@ -100,36 +74,29 @@ export const router = createBrowserRouter([
           </UserRoute>
         ),
         children: [
-          {
-            path: "addresses",
-            element: <Address />,
-          },
+          { path: "addresses", element: <Address /> },
           {
             path: "orders",
             element: <OrderList />,
-            children: [
-              {
-                path: ":id",
-                element: <OrderDetail />,
-              },
-            ],
+            children: [{ path: ":id", element: <OrderDetail /> }],
           },
         ],
       },
 
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "verify-otp",
-        element: <VerifyOtp />,
-      },
+      { path: "login", element: <Login /> },
+      { path: "verify-otp", element: <VerifyOtp /> },
     ],
   },
 
+  // ============================
+  // SIGNUP
+  // ============================
   {
     path: "/signup",
     element: <Signup />,
+  },
+  {
+    path: "/admin/*",
+    element: <AdminLayout />,
   },
 ]);

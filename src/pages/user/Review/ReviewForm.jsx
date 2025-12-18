@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ReviewForm.css';
-import { createReview } from '../../api/reviewApi';
+import { createReview } from '../../../api/reviewApi';
 
 export default function ReviewForm() {
   const { productId } = useParams();

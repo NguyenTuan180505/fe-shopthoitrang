@@ -10,13 +10,28 @@ export default function VerifyOtp() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { verifyOtp } = useUserAuth();
+  const { verifyOtp, user, isAuthenticated } = useUserAuth(); // Thêm user và isAuthenticated
 
   const email = localStorage.getItem("otp_email");
 
   useEffect(() => {
     if (!email) navigate("/login");
   }, [email, navigate]);
+
+  // NEW: Theo dõi khi user đã được load sau verify OTP
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      localStorage.removeItem("otp_email");
+
+      // Giả sử backend trả về role trong user object, ví dụ: user.role === "admin"
+      if (user.role.roleName === "ADMIN" || user.roleID === 1) {
+        console.log(user.role.roleName);
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/profile", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleVerify = async (e) => {
     e.preventDefault();
@@ -27,15 +42,16 @@ export default function VerifyOtp() {
       return;
     }
 
+    if (isLoading) return;
+
     setIsLoading(true);
+
     const ok = await verifyOtp(email, otp);
 
-    if (ok) {
-      localStorage.removeItem("otp_email");
-      navigate("/profile", { replace: true });
-    } else {
+    if (!ok) {
       setErrorMsg("Mã OTP không đúng hoặc đã hết hạn");
     }
+    // Không navigate ở đây nữa → để useEffect trên xử lý
 
     setIsLoading(false);
   };

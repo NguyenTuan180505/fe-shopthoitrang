@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import axiosClient from '../../../api/axiosClient';
+import axiosClient from '../../../api/axiosClientUser';
 import OrderDetailModal from './OrderDetailModal';
 
 export default function Orders() {

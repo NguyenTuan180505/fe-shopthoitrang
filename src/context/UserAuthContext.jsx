@@ -1,6 +1,6 @@
 // src/context/UserAuthContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
-import axiosClientUser from "../api/axiosClientUser";
+import axiosClient from "../api/axiosClientUser";
 
 const UserAuthContext = createContext();
 
@@ -14,7 +14,7 @@ export const UserAuthProvider = ({ children }) => {
   // ============================
   const fetchCurrentUser = async () => {
     try {
-      const res = await axiosClientUser.get("/users/me");
+      const res = await axiosClient.get("/users/me");
       setUser(res.data);
       setIsAuthenticated(true);
     } catch (err) {
@@ -30,7 +30,7 @@ export const UserAuthProvider = ({ children }) => {
   // ============================
   const login = async (email, password) => {
     try {
-      await axiosClientUser.post("/auth/login", { email, password });
+      await axiosClient.post("/auth/login", { email, password });
       return true;
     } catch (err) {
       console.error("Lỗi login:", err);
@@ -43,7 +43,7 @@ export const UserAuthProvider = ({ children }) => {
   // ============================
   const verifyOtp = async (email, otp) => {
     try {
-      const res = await axiosClientUser.post("/auth/verify-otp", {
+      const res = await axiosClient.post("/auth/verify-otp", {
         email,
         otp,
       });
@@ -69,7 +69,7 @@ export const UserAuthProvider = ({ children }) => {
   // ============================
   const signup = async (fullName, email, password, phone) => {
     try {
-      await axiosClientUser.post("/auth/register", {
+      await axiosClient.post("/auth/register", {
         fullName,
         email,
         password,

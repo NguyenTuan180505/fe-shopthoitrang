@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import HeroSection from "./HeroSection";
-import ProductTabs from "../../components/ProductTabs/ProductTabs";
-import ExclusiveOffer from "../../components/Home/ExclusiveOffer";
-import FeaturedCategories from "../../components/Home/FeaturedCategories";
-import { getProductsWithRating } from "../../services/productService";
+import ProductTabs from "../../../components/ProductTabs/ProductTabs";
+import ExclusiveOffer from "../../../components/Home/ExclusiveOffer";
+import FeaturedCategories from "../../../components/Home/FeaturedCategories";
+import { getProductsWithRating } from "../../../services/productService";
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);

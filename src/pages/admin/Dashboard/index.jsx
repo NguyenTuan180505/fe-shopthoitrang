@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axiosClient from '../../../api/axiosClient';
+import axiosClient from '../../../api/axiosClientUser';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const Dashboard = () => {

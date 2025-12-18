@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import CategoryFilter from "../../components/Shop/CategoryFilter";
-import ShopProductCard from "../../components/Shop/ShopProductCard";
+import CategoryFilter from "../../../components/Shop/CategoryFilter";
+import ShopProductCard from "../../../components/Shop/ShopProductCard";
 import styles from "./ShopPage.module.css";
 
 export default function ShopPage() {

@@ -1,8 +1,8 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useUserAuth } from '../context/UserAuthContext';
 
 export default function Sidebar() {
-  const { logout } = useAuth();
+  const { logout } = useUserAuth();
   const location = useLocation();
 
   const getNavLinkClass = ({ isActive }) => {

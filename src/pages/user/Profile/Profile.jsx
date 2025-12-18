@@ -6,7 +6,7 @@ import {
   MapPin,
   LogOut,
 } from "lucide-react";
-import { useUserAuth } from "../../context/UserAuthContext";
+import { useUserAuth } from "../../../context/UserAuthContext";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import OrderList from "./OrderList";
 import "./Profile.css";

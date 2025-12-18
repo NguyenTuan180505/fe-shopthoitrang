@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosClient from '../../../api/axiosClient';
+import axiosClient from '../../../api/axiosClientUser';
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);

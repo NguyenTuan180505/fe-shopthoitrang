@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axiosClientUser from "../../api/axiosClientUser";
+import axiosClientUser from "../../../api/axiosClientUser";
 import VoucherModal from "./VoucherModal";
 import QrPaymentModal from "./QrPaymentModal";
 import InvoiceFormModal from "./InvoiceFormModal";
@@ -130,21 +130,45 @@ export default function PaymentPage() {
   }, [isAuthenticated, isDirectOrder]);
 
   // ===== LẤY DANH SÁCH TỈNH =====
+  // useEffect(() => {
+  //   fetch("https://provinces.open-api.vn/api/p/")
+  //     .then((res) => res.json())
+  //     .then((data) => setProvinces(data))
+  //     .catch((err) => console.error("Error fetching provinces:", err));
+  // }, []);
   useEffect(() => {
-    fetch("https://provinces.open-api.vn/api/p/")
+    fetch("https://vn-public-apis.fpo.vn/provinces/getAll?limit=-1")
       .then((res) => res.json())
-      .then((data) => setProvinces(data))
+      .then((json) => {
+        setProvinces(json.data.data || []);
+      })
       .catch((err) => console.error("Error fetching provinces:", err));
   }, []);
 
+
   // ===== KHI CHỌN TỈNH → LẤY HUYỆN =====
+  // useEffect(() => {
+  //   if (!selectedProvince) return;
+
+  //   fetch(`https://provinces.open-api.vn/api/p/${selectedProvince}?depth=2`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setDistricts(data.districts || []);
+  //       setWards([]);
+  //       setSelectedDistrict("");
+  //       setSelectedWard("");
+  //     })
+  //     .catch((err) => console.error("Error fetching districts:", err));
+  // }, [selectedProvince]);
   useEffect(() => {
     if (!selectedProvince) return;
 
-    fetch(`https://provinces.open-api.vn/api/p/${selectedProvince}?depth=2`)
+    fetch(
+      `https://vn-public-apis.fpo.vn/districts/getByProvince?provinceCode=${selectedProvince}&limit=-1`
+    )
       .then((res) => res.json())
-      .then((data) => {
-        setDistricts(data.districts || []);
+      .then((json) => {
+        setDistricts(json.data.data || []);
         setWards([]);
         setSelectedDistrict("");
         setSelectedWard("");
@@ -152,14 +176,28 @@ export default function PaymentPage() {
       .catch((err) => console.error("Error fetching districts:", err));
   }, [selectedProvince]);
 
+
   // ===== KHI CHỌN HUYỆN → LẤY XÃ =====
+  // useEffect(() => {
+  //   if (!selectedDistrict) return;
+
+  //   fetch(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setWards(data.wards || []);
+  //       setSelectedWard("");
+  //     })
+  //     .catch((err) => console.error("Error fetching wards:", err));
+  // }, [selectedDistrict]);
   useEffect(() => {
     if (!selectedDistrict) return;
 
-    fetch(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`)
+    fetch(
+      `https://vn-public-apis.fpo.vn/wards/getByDistrict?districtCode=${selectedDistrict}&limit=-1`
+    )
       .then((res) => res.json())
-      .then((data) => {
-        setWards(data.wards || []);
+      .then((json) => {
+        setWards(json.data.data || []);
         setSelectedWard("");
       })
       .catch((err) => console.error("Error fetching wards:", err));
@@ -215,11 +253,9 @@ export default function PaymentPage() {
     }
 
     // ✅ Ghép địa chỉ thành string đầy đủ
-    const shippingAddress = `${address}, ${
-      wards.find((w) => w.code == selectedWard)?.name
-    }, ${districts.find((d) => d.code == selectedDistrict)?.name}, ${
-      provinces.find((p) => p.code == selectedProvince)?.name
-    }`;
+    const shippingAddress = `${address}, ${wards.find((w) => w.code == selectedWard)?.name
+      }, ${districts.find((d) => d.code == selectedDistrict)?.name}, ${provinces.find((p) => p.code == selectedProvince)?.name
+      }`;
 
     setCheckoutLoading(true);
 
@@ -248,12 +284,12 @@ export default function PaymentPage() {
 
       // ✅ COD: chỉ tạo order
       if (paymentMethod === "cod") {
-      alert("Đặt hàng thành công! (COD)");
-      navigate(`/profile/orders/${orderId}`, {
-        replace: true,
-      });
-      return;
-    }
+        alert("Đặt hàng thành công! (COD)");
+        navigate(`/profile/orders/${orderId}`, {
+          replace: true,
+        });
+        return;
+      }
 
       // ✅ VNPAY / SHOPEEPAY: mở QR DEMO
       if (paymentMethod === "vnpay" || paymentMethod === "shopeepay") {
@@ -271,33 +307,33 @@ export default function PaymentPage() {
   };
 
   const handleConfirmQrPayment = async () => {
-  try {
-    if (!pendingOrderId) {
-      console.error("Không tìm thấy order để thanh toán!");
-      return;
+    try {
+      if (!pendingOrderId) {
+        console.error("Không tìm thấy order để thanh toán!");
+        return;
+      }
+
+      await axiosClientUser.post("/Payments", {
+        orderID: pendingOrderId,
+        paymentMethod: paymentMethodMap[paymentMethod],
+        transactionID: "QR-DEMO-" + Date.now(),
+        amount: finalPrice,
+      });
+
+      setShowQr(false);
+
+      // 👉 ĐIỀU HƯỚNG ĐÚNG
+      navigate(`/profile/orders/${pendingOrderId}`, {
+        replace: true,
+      });
+
+    } catch (err) {
+      console.error("Confirm payment error:", err);
+      alert(
+        "Thanh toán thất bại: " + (err.response?.data?.message || err.message)
+      );
     }
-
-    await axiosClientUser.post("/Payments", {
-      orderID: pendingOrderId,
-      paymentMethod: paymentMethodMap[paymentMethod],
-      transactionID: "QR-DEMO-" + Date.now(),
-      amount: finalPrice,
-    });
-
-    setShowQr(false);
-
-    // 👉 ĐIỀU HƯỚNG ĐÚNG
-    navigate(`/profile/orders/${pendingOrderId}`, {
-      replace: true,
-    });
-
-  } catch (err) {
-    console.error("Confirm payment error:", err);
-    alert(
-      "Thanh toán thất bại: " + (err.response?.data?.message || err.message)
-    );
-  }
-};
+  };
 
 
   // ===== HÀNG VOUCHER =====
@@ -615,19 +651,19 @@ export default function PaymentPage() {
                   <div className="product-price">
                     {(item.product?.discountPercent ||
                       item.discountPercent) && (
-                      <p className="discount">
-                        -{item.product?.discountPercent || item.discountPercent}
-                        %
-                      </p>
-                    )}
+                        <p className="discount">
+                          -{item.product?.discountPercent || item.discountPercent}
+                          %
+                        </p>
+                      )}
                     {item.unitPrice && (
                       <>
                         {(item.product?.discountPercent ||
                           item.discountPercent) && (
-                          <p className="old-price">
-                            {formatCurrency(item.unitPrice)}
-                          </p>
-                        )}
+                            <p className="old-price">
+                              {formatCurrency(item.unitPrice)}
+                            </p>
+                          )}
                         <p className="new-price">
                           {formatCurrency(item.unitPrice * item.quantity)}
                         </p>

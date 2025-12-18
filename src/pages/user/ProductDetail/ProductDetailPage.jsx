@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styles from "./ProductDetailPage.module.css";
-import { cartService } from "../../services/cart.service";
-import ProductReviews from "../../components/ProductReviews/ProductReviews";
-import { useUserAuth } from "../../context/UserAuthContext";
+import { cartService } from "../../../services/cart.service";
+import ProductReviews from "../../../components/ProductReviews/ProductReviews";
+import { useUserAuth } from "../../../context/UserAuthContext";
 
 
 export default function ProductDetailPage() {

@@ -1,7 +1,7 @@
-import { useAuth } from '../context/AuthContext';
+import { useUserAuth } from '../context/UserAuthContext';
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user } = useUserAuth();
 
   return (
     <nav className="navbar navbar-expand navbar-light bg-white shadow-sm px-4" style={{ height: '70px' }}>
