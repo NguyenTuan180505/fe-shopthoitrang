@@ -14,6 +14,8 @@ export default function PaymentPage() {
   const orderType = location.state?.orderType || "CART";
   const directItems = location.state?.items || [];
   const isDirectOrder = orderType === "DIRECT";
+  const selectedItemIds = location.state?.selectedItemIds || [];
+  const isSelectedCartOrder = !isDirectOrder && selectedItemIds.length > 0;
 
   // ===== STATE CHO USER =====
   const [user, setUser] = useState(null);
@@ -96,6 +98,12 @@ export default function PaymentPage() {
 
     fetchUser();
   }, []);
+  useEffect(() => {
+    if (!isDirectOrder && selectedItemIds.length === 0) {
+      alert("Vui lòng chọn sản phẩm để thanh toán");
+      navigate("/cart", { replace: true });
+    }
+  }, [isDirectOrder, selectedItemIds, navigate]);
 
   useEffect(() => {
     if (user && !authLoading) {
@@ -110,7 +118,16 @@ export default function PaymentPage() {
       try {
         setLoading(true);
         const response = await axiosClientUser.get("/Cart");
-        setCartData(response.data);
+        const cart = response.data;
+
+        if (isSelectedCartOrder) {
+          cart.cartItems = cart.cartItems.filter((item) =>
+            selectedItemIds.includes(item.cartItemID)
+          );
+        }
+
+        setCartData(cart);
+
         setError("");
       } catch (err) {
         setError(err.response?.data?.message || "Lỗi khi lấy dữ liệu giỏ hàng");
@@ -145,7 +162,6 @@ export default function PaymentPage() {
       .catch((err) => console.error("Error fetching provinces:", err));
   }, []);
 
-
   // ===== KHI CHỌN TỈNH → LẤY HUYỆN =====
   // useEffect(() => {
   //   if (!selectedProvince) return;
@@ -175,7 +191,6 @@ export default function PaymentPage() {
       })
       .catch((err) => console.error("Error fetching districts:", err));
   }, [selectedProvince]);
-
 
   // ===== KHI CHỌN HUYỆN → LẤY XÃ =====
   // useEffect(() => {
@@ -229,16 +244,18 @@ export default function PaymentPage() {
   const productsToRender = isDirectOrder ? directItems : cartData?.cartItems;
 
   // ===== TÍNH TOÁN GIÁ TIỀN =====
-  const originalPrice = productsToRender?.reduce((sum, item) => {
-    return sum + (item.unitPrice * item.quantity);
-  }, 0) || 0;
+  const originalPrice =
+    productsToRender?.reduce((sum, item) => {
+      return sum + item.unitPrice * item.quantity;
+    }, 0) || 0;
 
-  const discount = productsToRender?.reduce((sum, item) => {
-    const discountPercent = item.product?.discountPercent || 0;
-    const itemOriginalPrice = item.unitPrice * item.quantity;
-    const itemDiscount = (itemOriginalPrice * discountPercent) / 100;
-    return sum + itemDiscount;
-  }, 0) || 0;
+  const discount =
+    productsToRender?.reduce((sum, item) => {
+      const discountPercent = item.product?.discountPercent || 0;
+      const itemOriginalPrice = item.unitPrice * item.quantity;
+      const itemDiscount = (itemOriginalPrice * discountPercent) / 100;
+      return sum + itemDiscount;
+    }, 0) || 0;
 
   const subtotal = originalPrice - discount;
   const voucherDiscount = voucher?.discountAmount || 0;
@@ -253,9 +270,11 @@ export default function PaymentPage() {
     }
 
     // ✅ Ghép địa chỉ thành string đầy đủ
-    const shippingAddress = `${address}, ${wards.find((w) => w.code == selectedWard)?.name
-      }, ${districts.find((d) => d.code == selectedDistrict)?.name}, ${provinces.find((p) => p.code == selectedProvince)?.name
-      }`;
+    const shippingAddress = `${address}, ${
+      wards.find((w) => w.code == selectedWard)?.name
+    }, ${districts.find((d) => d.code == selectedDistrict)?.name}, ${
+      provinces.find((p) => p.code == selectedProvince)?.name
+    }`;
 
     setCheckoutLoading(true);
 
@@ -273,10 +292,10 @@ export default function PaymentPage() {
       } else {
         // ✅ ORDER TỪ CART
         console.log("Gọi API /Orders/from-cart");
-        orderRes = await axiosClientUser.post("/Orders/from-cart", {
+        orderRes = await axiosClientUser.post("/Orders/from-cart-selected", {
+          cartItemIds: selectedItemIds,
           shippingAddress,
           paymentMethod: paymentMethodMap[paymentMethod],
-          note: voucher ? `Voucher: ${voucher.code}` : "",
         });
       }
 
@@ -326,7 +345,6 @@ export default function PaymentPage() {
       navigate(`/profile/orders/${pendingOrderId}`, {
         replace: true,
       });
-
     } catch (err) {
       console.error("Confirm payment error:", err);
       alert(
@@ -334,7 +352,6 @@ export default function PaymentPage() {
       );
     }
   };
-
 
   // ===== HÀNG VOUCHER =====
   const handleSelectVoucher = (voucherObj) => {
@@ -514,8 +531,8 @@ export default function PaymentPage() {
                   <div className="shipping-content">
                     <div className="shipping-title">Tiêu chuẩn 2-5 ngày</div>
                     <div className="shipping-desc">
-                      Thứ giờ giao hàng tùy thuộc vào điều kiện của địa điểm
-                      và vị trí giao hàng. Dự kiến giao hàng 2-5 ngày
+                      Thứ giờ giao hàng tùy thuộc vào điều kiện của địa điểm và
+                      vị trí giao hàng. Dự kiến giao hàng 2-5 ngày
                     </div>
                     <div className="shipping-logos">
                       <span className="logo-brand">Shopee Logistics</span>
@@ -566,8 +583,7 @@ export default function PaymentPage() {
                       Công ty thanh toán VNPAY
                     </span>
                     <span className="payment-sub">
-                      Hỗ trợ các hình thức VISA, MC, JCB, eWay, ePay,
-                      VNPAY...
+                      Hỗ trợ các hình thức VISA, MC, JCB, eWay, ePay, VNPAY...
                     </span>
                   </div>
                 </label>
@@ -651,19 +667,19 @@ export default function PaymentPage() {
                   <div className="product-price">
                     {(item.product?.discountPercent ||
                       item.discountPercent) && (
-                        <p className="discount">
-                          -{item.product?.discountPercent || item.discountPercent}
-                          %
-                        </p>
-                      )}
+                      <p className="discount">
+                        -{item.product?.discountPercent || item.discountPercent}
+                        %
+                      </p>
+                    )}
                     {item.unitPrice && (
                       <>
                         {(item.product?.discountPercent ||
                           item.discountPercent) && (
-                            <p className="old-price">
-                              {formatCurrency(item.unitPrice)}
-                            </p>
-                          )}
+                          <p className="old-price">
+                            {formatCurrency(item.unitPrice)}
+                          </p>
+                        )}
                         <p className="new-price">
                           {formatCurrency(item.unitPrice * item.quantity)}
                         </p>
