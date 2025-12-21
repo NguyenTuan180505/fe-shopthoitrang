@@ -2,7 +2,13 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./CartItem.module.css";
 
-const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
+const CartItem = ({
+  item,
+  checked,
+  onToggle,
+  onUpdateQuantity,
+  onRemoveItem,
+}) => {
   const { product, quantity, unitPrice, cartItemID } = item;
   const [isUpdating, setIsUpdating] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -31,9 +37,32 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
     }
   };
 
+  const handleCardClick = (e) => {
+    // Không toggle nếu click vào các nút điều khiển
+    if (
+      e.target.closest(`.${styles.deleteBtn}`) ||
+      e.target.closest(`.${styles.qtyBtn}`) ||
+      e.target.closest(`.${styles.quantityControl}`)
+    ) {
+      return;
+    }
+    onToggle();
+  };
+
   return (
     <>
-      <div className={styles.cartItem}>
+      <div
+        className={`${styles.cartItem} ${checked ? styles.selected : ""}`}
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggle();
+          }
+        }}
+      >
         {/* Delete Button */}
         <button
           className={styles.deleteBtn}
@@ -71,6 +100,25 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
           ></div>
           {product.discount > 0 && (
             <span className={styles.discountBadge}>-{product.discount}%</span>
+          )}
+          {checked && (
+            <div className={styles.selectedOverlay}>
+              <svg
+                className={styles.selectedIcon}
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="12" cy="12" r="10" fill="#10b981" />
+                <path
+                  d="M8 12L11 15L16 9"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
           )}
         </div>
 
@@ -125,7 +173,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
         </div>
 
         <div className={styles.priceBox}>
-          {/* Giá gốc (1 sản phẩm) */}
           {product.discount > 0 && (
             <div className={styles.priceRow}>
               <span className={styles.priceLabel}>Giá gốc:</span>
@@ -135,7 +182,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
             </div>
           )}
 
-          {/* Giá sau giảm (1 sản phẩm) */}
           <div className={styles.priceRow}>
             <span className={styles.priceLabel}>
               {product.discount > 0 ? "Giá KM:" : "Đơn giá:"}
@@ -145,7 +191,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
             </span>
           </div>
 
-          {/* Tổng tiền (sau khi nhân số lượng) */}
           <div className={styles.totalPriceRow}>
             <span className={styles.totalLabel}>Tổng:</span>
             <span className={styles.totalPrice}>
@@ -155,7 +200,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
         </div>
       </div>
 
-      {/* Confirm Delete Modal - Render outside using Portal */}
+      {/* Confirm Delete Modal */}
       {showConfirm &&
         createPortal(
           <div
@@ -166,19 +211,6 @@ const CartItem = ({ item, onUpdateQuantity, onRemoveItem }) => {
               className={styles.confirmModal}
               onClick={(e) => e.stopPropagation()}
             >
-              <svg
-                className={styles.confirmIcon}
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                />
-              </svg>
               <h3 className={styles.confirmTitle}>Xóa sản phẩm?</h3>
               <p className={styles.confirmText}>
                 Bạn có chắc muốn xóa "<strong>{product.productName}</strong>"

@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 const CartPage = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedItemIds, setSelectedItemIds] = useState([]);
   const navigate = useNavigate();
 
   const fetchCart = async () => {
     try {
       const res = await cartService.getCart();
       setCart(res.data);
+      setSelectedItemIds([]); // reset selection
     } catch (error) {
       console.error("Lỗi tải giỏ hàng:", error);
     } finally {
@@ -44,6 +46,51 @@ const CartPage = () => {
     }
   };
 
+  // ===== CHECKBOX LOGIC =====
+  const handleToggleItem = (cartItemId) => {
+    setSelectedItemIds((prev) =>
+      prev.includes(cartItemId)
+        ? prev.filter((id) => id !== cartItemId)
+        : [...prev, cartItemId]
+    );
+  };
+
+  const isAllSelected =
+    cart?.cartItems?.length > 0 &&
+    selectedItemIds.length === cart.cartItems.length;
+
+  const handleToggleAll = () => {
+    if (isAllSelected) {
+      setSelectedItemIds([]);
+    } else {
+      setSelectedItemIds(cart.cartItems.map((i) => i.cartItemID));
+    }
+  };
+
+  const handleCheckoutClick = () => {
+    if (selectedItemIds.length === 0) {
+      alert("Vui lòng chọn sản phẩm trong giỏ hàng");
+      return;
+    }
+
+    navigate("/payment", {
+      state: {
+        selectedItemIds,
+      },
+    });
+  };
+
+  // ===== TOTAL PRICE (CHỈ ITEM ĐƯỢC CHỌN) =====
+  const selectedTotalPrice =
+    cart?.cartItems
+      ?.filter((item) => selectedItemIds.includes(item.cartItemID))
+      .reduce((sum, item) => {
+        const price =
+          item.unitPrice - (item.unitPrice * item.product.discount) / 100;
+        return sum + price * item.quantity;
+      }, 0) || 0;
+
+  // ===== LOADING =====
   if (loading) {
     return (
       <div className={styles.loadingWrapper}>
@@ -53,28 +100,18 @@ const CartPage = () => {
     );
   }
 
+  // ===== EMPTY CART =====
   if (!cart || cart.cartItems.length === 0) {
     return (
       <div className={styles.emptyWrapper}>
         <div className={styles.emptyCart}>
-          <svg
-            className={styles.emptyIcon}
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M9 2L7.17 4H4C2.9 4 2 4.9 2 6V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V6C22 4.9 21.1 4 20 4H16.83L15 2H9ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17Z"
-              fill="currentColor"
-            />
-          </svg>
           <h2 className={styles.emptyTitle}>Giỏ hàng trống</h2>
           <p className={styles.emptyText}>
             Hãy thêm sản phẩm yêu thích vào giỏ hàng nhé!
           </p>
           <button
             className={styles.shopButton}
-            onClick={() => (window.location.href = "/shop")}
+            onClick={() => navigate("/shop")}
           >
             Khám phá ngay
           </button>
@@ -83,45 +120,88 @@ const CartPage = () => {
     );
   }
 
-  const totalPrice = cart.cartItems.reduce((sum, item) => {
-    const price =
-      item.unitPrice - (item.unitPrice * item.product.discount) / 100;
-    return sum + price * item.quantity;
-  }, 0);
-
   return (
     <div className={styles.cartPage}>
       <div className={styles.container}>
+        {/* HEADER */}
         <div className={styles.header}>
-          <h1 className={styles.title}>
-            <svg
-              className={styles.titleIcon}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M9 2L7.17 4H4C2.9 4 2 4.9 2 6V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V6C22 4.9 21.1 4 20 4H16.83L15 2H9Z"
-                fill="currentColor"
-              />
-            </svg>
-            Giỏ hàng của bạn
-          </h1>
+          <h1 className={styles.title}>Giỏ hàng của bạn</h1>
           <p className={styles.subtitle}>{cart.cartItems.length} sản phẩm</p>
         </div>
 
         <div className={styles.content}>
+          {/* CART LIST */}
           <div className={styles.cartList}>
+            {/* SELECT ALL - Modern Design */}
+            <div className={styles.selectAllCard}>
+              <button
+                className={`${styles.selectAllBtn} ${
+                  isAllSelected ? styles.allSelected : ""
+                }`}
+                onClick={handleToggleAll}
+              >
+                <div className={styles.selectAllIndicator}>
+                  <div
+                    className={`${styles.indicator} ${
+                      isAllSelected ? styles.active : ""
+                    }`}
+                  >
+                    {isAllSelected && (
+                      <svg
+                        className={styles.checkIcon}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 6L9 17L4 12"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <div className={styles.selectAllContent}>
+                  <span className={styles.selectAllText}>
+                    {isAllSelected ? "Bỏ chọn tất cả" : "Chọn tất cả"}
+                  </span>
+                  <span className={styles.selectAllCounter}>
+                    {selectedItemIds.length}/{cart.cartItems.length} sản phẩm
+                  </span>
+                </div>
+                <svg
+                  className={styles.selectAllArrow}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 5L16 12L9 19"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
             {cart.cartItems.map((item) => (
               <CartItem
                 key={item.cartItemID}
                 item={item}
+                checked={selectedItemIds.includes(item.cartItemID)}
+                onToggle={() => handleToggleItem(item.cartItemID)}
                 onUpdateQuantity={handleUpdateQuantity}
                 onRemoveItem={handleRemoveItem}
               />
             ))}
           </div>
 
+          {/* SIDEBAR */}
           <div className={styles.sidebar}>
             <div className={styles.summary}>
               <h2 className={styles.summaryTitle}>Tóm tắt đơn hàng</h2>
@@ -129,7 +209,7 @@ const CartPage = () => {
               <div className={styles.summaryRow}>
                 <span className={styles.label}>Tạm tính:</span>
                 <span className={styles.value}>
-                  {totalPrice.toLocaleString()} đ
+                  {selectedTotalPrice.toLocaleString()} đ
                 </span>
               </div>
 
@@ -143,65 +223,16 @@ const CartPage = () => {
               <div className={styles.totalRow}>
                 <span className={styles.totalLabel}>Tổng cộng:</span>
                 <span className={styles.total}>
-                  {totalPrice.toLocaleString()} đ
+                  {selectedTotalPrice.toLocaleString()} đ
                 </span>
               </div>
 
               <button
                 className={styles.checkoutBtn}
-                onClick={() => navigate("/payment")}
+                onClick={handleCheckoutClick}
               >
-                <svg
-                  className={styles.checkoutIcon}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 13L9 17L19 7"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
                 Thanh toán
               </button>
-
-              <div className={styles.badges}>
-                <div className={styles.badgeItem}>
-                  <svg
-                    className={styles.badgeIcon}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <span className={styles.badgeText}>Đổi trả trong 7 ngày</span>
-                </div>
-                <div className={styles.badgeItem}>
-                  <svg
-                    className={styles.badgeIcon}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 15V3M12 15L8 11M12 15L16 11M2 17L2 19C2 20.1046 2.89543 21 4 21L20 21C21.1046 21 22 20.1046 22 19V17"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <span className={styles.badgeText}>Miễn phí vận chuyển</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
