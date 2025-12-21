@@ -4,7 +4,7 @@ import axiosClientUser from "../../../api/axiosClientUser";
 import VoucherModal from "./VoucherModal";
 import QrPaymentModal from "./QrPaymentModal";
 import InvoiceFormModal from "./InvoiceFormModal";
-
+import CodConfirmModal from "./CodConfirmModal";
 import "./payment.css";
 
 export default function PaymentPage() {
@@ -54,6 +54,9 @@ export default function PaymentPage() {
 
   // ===== STATE CHO INVOICE =====
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+
+  // ===== STATE CHO XÁC NHẬN COD =====
+  const [showCodConfirm, setShowCodConfirm] = useState(false);
 
   // ===== VALIDATION =====
   const [errors, setErrors] = useState({ phone: "" });
@@ -334,6 +337,20 @@ export default function PaymentPage() {
       );
     }
   };
+  const handleCheckoutClick = () => {
+    if (!isAddressComplete) {
+      alert("Vui lòng điền đầy đủ thông tin giao hàng");
+      return;
+    }
+
+    if (paymentMethod === "cod") {
+      setShowCodConfirm(true);
+      return;
+    }
+
+    handleCheckout();
+  };
+
 
 
   // ===== HÀNG VOUCHER =====
@@ -792,7 +809,8 @@ export default function PaymentPage() {
             <button
               className="btn-checkout"
               disabled={!isAddressComplete || checkoutLoading}
-              onClick={handleCheckout}
+              onClick={handleCheckoutClick}
+
             >
               {checkoutLoading ? "ĐANG XỬ LÝ..." : "THANH TOÁN"}
             </button>
@@ -818,6 +836,15 @@ export default function PaymentPage() {
         onConfirm={handleConfirmQrPayment}
         orderId={pendingOrderId}
       />
+      <CodConfirmModal
+        isOpen={showCodConfirm}
+        onClose={() => setShowCodConfirm(false)}
+        onConfirm={async () => {
+          setShowCodConfirm(false);
+          await handleCheckout(); // ✅ TẠO ĐƠN COD
+        }}
+      />
+
 
       {/* INVOICE FORM MODAL */}
       <InvoiceFormModal

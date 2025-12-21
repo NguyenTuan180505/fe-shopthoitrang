@@ -9,6 +9,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import "./OrderDetail.css";
+import QrPaymentModal from "../Payment/QrPaymentModal";
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -17,6 +18,41 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null);
   const [payment, setPayment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showQr, setShowQr] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const handleConfirmQrPayment = async () => {
+    try {
+      setPaying(true);
+
+      await axiosClientUser.post("/Payments", {
+        orderID: order.orderID,
+        paymentMethod: order.paymentMethod,
+        transactionID: "QR-REPAY-" + Date.now(),
+        amount: order.totalAmount,
+      });
+
+      setShowQr(false);
+
+      // reload lại order + payment
+      const orderRes = await axiosClientUser.get(`/orders/${id}`);
+      setOrder(orderRes.data);
+
+      const paymentRes = await axiosClientUser.get(`/payments/order/${id}`);
+      const payments = paymentRes.data;
+
+      if (payments?.length) {
+        const latest = payments.reduce((a, b) =>
+          b.paymentID > a.paymentID ? b : a
+        );
+        setPayment(latest);
+      }
+    } catch (err) {
+      alert("Thanh toán thất bại");
+      console.error(err);
+    } finally {
+      setPaying(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -197,6 +233,20 @@ export default function OrderDetail() {
         ) : (
           <p>Chưa có thanh toán</p>
         )}
+        {/* ===== PAY NOW BUTTON ===== */}
+        {(order.paymentMethod === "VNPAY" ||
+          order.paymentMethod === "SHOPEEPAY") &&
+          (!payment || payment.status?.toLowerCase() !== "success") &&
+          !order.orderStatus?.toLowerCase().includes("cancelled") && (
+            <button
+              className="pay-now-btn"
+              onClick={() => setShowQr(true)}
+              disabled={paying}
+            >
+              {paying ? "ĐANG THANH TOÁN..." : "THANH TOÁN NGAY"}
+            </button>
+          )}
+
       </div>
 
       {/* ===================== ACTION ===================== */}
@@ -205,6 +255,14 @@ export default function OrderDetail() {
           Hủy đơn hàng
         </button>
       )}
+      <QrPaymentModal
+        isOpen={showQr}
+        onClose={() => setShowQr(false)}
+        onConfirm={handleConfirmQrPayment}
+        method={order.paymentMethod}
+        orderId={order.orderID}
+        amount={order.totalAmount}
+      />
     </div>
   );
 }

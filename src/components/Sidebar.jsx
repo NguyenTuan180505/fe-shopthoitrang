@@ -82,13 +82,13 @@ export default function Sidebar() {
         </ul>
 
         <div className="px-2 mb-2">
-            <small className="text-uppercase text-secondary fw-bold" style={{fontSize: '0.7rem', letterSpacing: '1px'}}>Người dùng</small>
+            <small className="text-uppercase text-secondary fw-bold" style={{fontSize: '0.7rem', letterSpacing: '1px'}}>Quản Lý Người dùng</small>
         </div>
         <ul className="nav nav-pills flex-column mb-4">
           <li className="nav-item">
             <NavLink to="/admin/users" className={getNavLinkClass} style={linkStyle}>
               <i className="bi bi-people-fill me-3 fs-5"></i>
-              Khách hàng
+              Người Dùng
             </NavLink>
           </li>
         </ul>

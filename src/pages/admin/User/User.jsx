@@ -45,22 +45,31 @@ export default function Users() {
 
   // BẬT/TẮT TRẠNG THÁI - HOẠT ĐỘNG NGON
   const toggleUserStatus = async (userId, currentStatus) => {
+    const user = users.find(u => u.userID === userId);
+
+    // 🔒 CHẶN ADMIN Ở LOGIC
+    if (user?.role?.roleName === 'ADMIN') {
+      alert("Không thể khóa hoặc mở khóa tài khoản ADMIN!");
+      return;
+    }
+
     const newStatus = !currentStatus;
+
     try {
       await axiosClient.put(`/users/${userId}/status`, null, {
         params: { active: newStatus }
       });
 
       setUsers(prev =>
-        prev.map(user =>
-          user.userID === userId ? { ...user, isActive: newStatus } : user
+        prev.map(u =>
+          u.userID === userId ? { ...u, isActive: newStatus } : u
         )
       );
     } catch (err) {
-      console.error("Lỗi toggle status:", err.response || err);
       alert("Không thể thay đổi trạng thái");
     }
   };
+
 
   const openRoleModal = (user) => {
     setSelectedUser(user);
@@ -69,44 +78,46 @@ export default function Users() {
   };
 
   // ĐỔI VAI TRÒ - ĐÃ SỬA ĐÚNG 100% THEO POSTMAN CỦA BẠN
-    const updateUserRole = async () => {
-    if (!selectedUser) return;
+const updateUserRole = async () => {
+  if (!selectedUser) return;
 
-    // ĐÚNG CHUẨN BACKEND CỦA BẠN (theo thực tế hầu hết project Việt Nam)
-    const roleIdMap = {
-      "CUSTOMER": 2,  // Khách hàng
-      "ADMIN":  1    // Quản trị viên
-      // Nếu sau này có thêm role thì thêm vào đây
-    };
+  // 🔒 CHẶN ADMIN Ở LOGIC
+  if (selectedUser.role?.roleName === 'ADMIN') {
+    alert("Không thể thay đổi vai trò của ADMIN!");
+    return;
+  }
 
-    const roleId = roleIdMap[newRole];
-
-    if (!roleId) {
-      alert("Vai trò không hợp lệ!");
-      return;
-    }
-
-    try {
-      await axiosClient.put(`/users/${selectedUser.userID}/role`, null, {
-        params: { roleId: roleId }   // đúng 100% theo Postman bạn chụp
-      });
-
-      // Cập nhật giao diện ngay lập tức
-      setUsers(prev =>
-        prev.map(u =>
-          u.userID === selectedUser.userID
-            ? { ...u, role: { ...u.role, roleName: newRole } }
-            : u
-        )
-      );
-
-      setShowRoleModal(false);
-      alert("Cập nhật vai trò thành công!");
-    } catch (err) {
-      console.error("Lỗi đổi role:", err.response || err);
-      alert("Cập nhật thất bại: " + (err.response?.data?.message || "Lỗi server"));
-    }
+  const roleIdMap = {
+    CUSTOMER: 2,
+    ADMIN: 1
   };
+
+  const roleId = roleIdMap[newRole];
+  if (!roleId) {
+    alert("Vai trò không hợp lệ!");
+    return;
+  }
+
+  try {
+    await axiosClient.put(`/users/${selectedUser.userID}/role`, null, {
+      params: { roleId }
+    });
+
+    setUsers(prev =>
+      prev.map(u =>
+        u.userID === selectedUser.userID
+          ? { ...u, role: { ...u.role, roleName: newRole } }
+          : u
+      )
+    );
+
+    setShowRoleModal(false);
+    alert("Cập nhật vai trò thành công!");
+  } catch (err) {
+    alert("Cập nhật thất bại");
+  }
+};
+
 
   const formatDate = (date) => {
     if (!date) return 'N/A';
@@ -255,8 +266,10 @@ export default function Users() {
                           className="form-check-input"
                           type="checkbox"
                           checked={user.isActive}
+                          disabled={user.role?.roleName === 'ADMIN'}
                           onChange={() => toggleUserStatus(user.userID, user.isActive)}
                         />
+
                         <label className="form-check-label small">
                           {user.isActive ? <span className="text-success fw-bold">Active</span> : <span className="text-muted">Locked</span>}
                         </label>
@@ -304,14 +317,20 @@ export default function Users() {
                 <p className="text-muted">{selectedUser?.email}</p>
 
                 <select
-                  className="form-select form-select-lg mb-3"
+                  className="form-select my-3"
                   value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
+                  disabled={selectedUser.role?.roleName === 'ADMIN'}
+                  onChange={e => setNewRole(e.target.value)}
                 >
-                  <option value="CUSTOMER">CUSTOMER - Khách hàng</option>
-                  <option value="ADMIN">ADMIN - Quản trị viên</option>
-                  {/* <option value="MANAGER">MANAGER - Quản lý</option> */}
+                  <option value="CUSTOMER">CUSTOMER</option>
+                  <option value="ADMIN">ADMIN</option>
                 </select>
+
+                {selectedUser.role?.roleName === 'ADMIN' && (
+                  <div className="alert alert-danger small">
+                    Không thể thay đổi quyền ADMIN
+                  </div>
+                )}
 
                 <div className="alert alert-warning small">
                   <strong>Cảnh báo:</strong> Chỉ cấp quyền ADMIN khi thực sự cần thiết!
@@ -319,7 +338,14 @@ export default function Users() {
               </div>
               <div className="modal-footer">
                 <button className="btn btn-light" onClick={() => setShowRoleModal(false)}>Hủy</button>
-                <button className="btn btn-primary" onClick={updateUserRole}>Cập nhật vai trò</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={updateUserRole}
+                  disabled={selectedUser?.role?.roleName === 'ADMIN'}
+                >
+                  Cập nhật vai trò
+                </button>
+
               </div>
             </div>
           </div>
