@@ -23,7 +23,7 @@ export default function ProductDetailPage() {
   const [allProducts, setAllProducts] = useState([]);
 
   useEffect(() => {
-    fetch("https://localhost:7298/api/products")
+    fetch("http://huytran1611-001-site1.anytempurl.com/api/products")
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);

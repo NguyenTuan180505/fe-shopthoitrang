@@ -27,7 +27,7 @@ export default function ProductReviews({ productId }) {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://localhost:7298/api/Reviews/product/${productId}`
+        `http://huytran1611-001-site1.anytempurl.com/api/Reviews/product/${productId}`
       );
       const data = await response.json();
 

@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosClientUser = axios.create({
-  baseURL: "https://localhost:7298/api",
+  baseURL: "http://huytran1611-001-site1.anytempurl.com/api",
   headers: {
     "Content-Type": "application/json",
   },

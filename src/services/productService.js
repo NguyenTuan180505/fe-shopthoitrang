@@ -1,7 +1,7 @@
 // src/services/productService.js
 
-const PRODUCT_API = "https://localhost:7298/api/products";
-const REVIEW_API = "https://localhost:7298/api/Reviews/product";
+const PRODUCT_API = "http://huytran1611-001-site1.anytempurl.com/api/products";
+const REVIEW_API = "http://huytran1611-001-site1.anytempurl.com/api/Reviews/product";
 
 // Lấy danh sách sản phẩm kèm rating
 export async function getProductsWithRating() {

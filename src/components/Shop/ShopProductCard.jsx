@@ -17,7 +17,7 @@ export default function ShopProductCard({ product }) {
     try {
       setLoading(true);
       const response = await fetch(
-        `https://localhost:7298/api/Reviews/product/${product.productID}`
+        `http://huytran1611-001-site1.anytempurl.com/api/Reviews/product/${product.productID}`
       );
       const data = await response.json();
 

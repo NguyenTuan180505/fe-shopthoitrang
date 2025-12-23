@@ -8,7 +8,7 @@ export default function FeaturedCategories() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("https://localhost:7298/api/categories")
+    fetch("http://huytran1611-001-site1.anytempurl.com/api/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error("Error fetching categories:", err));

@@ -18,11 +18,11 @@ export default function ShopPage() {
   );
 
   useEffect(() => {
-    fetch("https://localhost:7298/api/categories")
+    fetch("http://huytran1611-001-site1.anytempurl.com/api/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data));
 
-    fetch("https://localhost:7298/api/products")
+    fetch("http://huytran1611-001-site1.anytempurl.com/api/products")
       .then((res) => res.json())
       .then((data) => setProducts(data));
   }, []);
