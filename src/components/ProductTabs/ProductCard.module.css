@@ -1,0 +1,68 @@
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ảnh luôn đồng bộ, luôn fill toàn bộ khung */
+.image {
+  width: 100%;
+  aspect-ratio: 3 / 4; /* Tỉ lệ vàng cho ảnh chân dung */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 6px;
+  background-color: #f0f0f0; /* fallback nếu ảnh lỗi */
+}
+
+/* Product Name */
+.name {
+  margin-top: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #03341d;
+}
+
+/* Price + Rating row */
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+/* Price block */
+.priceBlock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Price */
+.price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #03341d;
+}
+
+/* Old price */
+.oldPrice {
+  text-decoration: line-through;
+  opacity: 0.4;
+  font-size: 16px;
+}
+
+/* Rating */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #03341d;
+}
+
+.star {
+  color: #ffc107; /* vàng */
+  font-size: 18px;
+}

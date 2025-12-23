@@ -1,0 +1,135 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px;
+}
+
+.hero {
+  background: linear-gradient(to bottom, #c9f6d6 0%, #a8e6cf 100%);
+  padding: 100px 0 80px;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #03341d;
+  margin-bottom: 24px;
+}
+
+.heroSubtitle {
+  font-size: 1.3rem;
+  color: #4b5563;
+  margin: 0;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.title::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 2px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.content {
+  min-height: 300px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.noResults {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.noResults h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.noResults p {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 240px 1fr;
+    gap: 30px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop {
+    padding: 40px 0;
+  }
+
+  .container {
+    padding: 40px 20px;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 40px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 20px;
+  }
+
+  .noResults {
+    padding: 60px 20px;
+  }
+
+  .noResults h3 {
+    font-size: 1.25rem;
+  }
+
+  .noResults p {
+    font-size: 0.9rem;
+  }
+}
